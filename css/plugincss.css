@@ -1,0 +1,95 @@
+.ellipsis {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    -o-text-overflow: ellipsis !important;
+    -moz-binding: url('assets/xml/ellipsis.xml#ellipsis') !important;
+}
+
+hr {
+    width: 99% !important;
+}
+
+.table {
+   width: 98% !important;
+}
+
+.ui-jqgrid-view{
+    margin-left: 0 !important;
+}
+
+.ui-dialog .ui-dialog-titlebar-close {
+    background-image: url("images/ui-icons_ef8c08_256x240.png");
+    background-position: -96px -128px;
+}
+
+.i-icon-zoomin { background-position: -128px -112px !important; }
+
+.wrap{
+    margin: 10px 0px 10px 28px;
+    border-top: 1px solid #DDDDDD;
+    border-bottom: 1px solid #DDDDDD;
+    padding: 5px;
+    width: 100%;
+}
+
+.clear-margin{
+    margin: 0 !important;
+}
+
+#progressOverlay .progress {
+    position:relative;
+    width:80%;
+    top:50%;
+    margin:0 auto;
+}
+ 
+#progressOverlay {
+    position:relative;
+    height:100%;
+}
+
+.spacer10 { height: 10px; width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
+
+.input-append .add-on, .input-prepend .add-on {
+    background-color: #EEEEEE;
+    border: 1px solid #CCCCCC;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: normal;
+    height: 20px;
+    line-height: 20px;
+    min-width: 16px;
+    padding: 4px 5px;
+    text-align: center;
+    text-shadow: 0 1px 0 #FFFFFF;
+    width: auto;
+}
+
+.added {
+    float: left;
+    margin-right: 10px;
+}
+.eliminar {
+    margin: 5px;
+}
+
+input[type="text"]{
+    background-color: #FFFFFF;
+    border: 1px solid #CCCCCC;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+    transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
+    border-radius: 4px 4px 4px 4px;
+    color: #555555;
+    display: inline-block;
+    font-size: 14px;
+    height: 30px;
+    line-height: 20px;
+    margin-bottom: 10px;
+    padding: 4px 6px;
+    vertical-align: middle;
+}
+
+label.error {
+    color: red;
+}
