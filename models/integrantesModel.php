@@ -8,9 +8,9 @@ class integrantes extends DBManagerModel{
         $entity = $this->entity();
         $start = $params["limit"] * $params["page"] - $params["limit"];
         $query = "SELECT `integranteId`, `identificacion`, `nombre`, `apellido`
-                        , `genero`, `rhId` RH, `fechaNacimiento`, telefono, celular
+                        , `genero`, `rhId`, `fechaNacimiento`, telefono, celular
                         ,  email, emailPersonal, `direccion`, departamentoId departamento
-                        , `ciudadRecidenciaId` ciudadRecidencia, `localidad`
+                        , `ciudadRecidenciaId`, `localidad`
                         , `barrio` 
                   FROM ".$entity["tableName"]." i
                        JOIN ".$this->pluginPrefix."ciudades c ON c.ciudadId = i.ciudadRecidenciaId
@@ -28,20 +28,18 @@ class integrantes extends DBManagerModel{
                   WHERE `departamentoId` = ". $params["filter"];
         
         $cities = $this->getDataGrid($query, NULL, NULL , "ciudad", "ASC");
-        
-        //$responce = array(/*"dataKeys" => array("key" => "ciudadId", "value" => "ciudad"),*/ "data" => $cities["data"]);
-        echo $responce = "{'metaData':'key'}";
-        //echo json_encode($responce);
+        $responce = array("metaData" => array("key" => "ciudadId", "value" => "ciudad"), "data" => $cities["data"]);
+        return $cities;
     }
     
     public function add(){
         $this->addRecord($this->entity(), $_POST, array("date_entered" => date("Y-m-d H:i:s"), "created_by" => $this->currentUser->ID));
     }
     public function edit(){
-        $this->updateRecord($this->entity(), $_POST, array("nonConformityId" => $_POST["nonConformityId"]), array("columnValidateEdit" => "assigned_user_id"));
+        $this->updateRecord($this->entity(), $_POST, array("integranteId" => $_POST["integranteId"])/*, array("columnValidateEdit" => "assigned_user_id")*/);
     }
     public function del(){
-        $this->delRecord($this->entity(), array("nonConformityId" => $_POST["id"]), array("columnValidateEdit" => "assigned_user_id"));
+        $this->delRecord($this->entity(), array("integranteId" => $_POST["id"]), array("columnValidateEdit" => "assigned_user_id"));
     }
 
     public function detail($params = array()){
@@ -68,25 +66,50 @@ class integrantes extends DBManagerModel{
     {
             $data = array(
                             "tableName" => $this->pluginPrefix."integrantes"
-                            ,"columnValidateEdit" => "assigned_user_id"
+                            //,"columnValidateEdit" => "assigned_user_id"
                             ,"entityConfig" => $CRUD
                             ,"atributes" => array(
-                                "identificacion" => array("type" => "varchar", "required" => true)
+                                "integranteId" => array("type" => "int", "PK" => 0, "required" => false, readOnly => true, "autoIncrement" => true, "toolTip" => array("type" => "cell", "cell" => 2) )
+                                ,"identificacion" => array("type" => "varchar", "required" => true)
                                 ,"nombre" => array("type" => "varchar", "required" => true)
                                 ,"apellido" => array("type" => "varchar", "required" => true)
                                 ,"genero" => array("type" => "enum", "hidden" => true, "edithidden" => true, "required" => true)
-                                ,"RH" => array("type" => "tinyint", "hidden" => true, "edithidden" => true, "required" => true, "references" => array("table" => $this->pluginPrefix."rh", "id" => "rhId", "text" => "rh"))
+                                ,"rhId" => array("type" => "tinyint", "hidden" => true, "edithidden" => true, "required" => true, "references" => array("table" => $this->pluginPrefix."rh", "id" => "rhId", "text" => "rh"))
                                 ,"fechaNacimiento" => array("type" => "date", "hidden" => true, "edithidden" => true, "hidden" => true, "edithidden" => true, "required" => true)
                                 ,"telefono" => array("type" => "varchar", "required" => true)
                                 ,"celular" => array("type" => "varchar", "required" => true)
                                 ,"email" => array("type" => "email", "required" => true)
                                 ,"emailPersonal" => array("type" => "email", "hidden" => true, "edithidden" => true)
                                 ,"direccion" => array("type" => "varchar", "hidden" => true, "edithidden" => true, "required" => true)
-                                ,"departamento" => array("type" => "tinyint", "hidden" => true, "edithidden" => true, "required" => true, "references" => array("table" => $this->pluginPrefix."departamentos", "id" => "departamentoId", "text" => "departamento"))
-                                ,"ciudadRecidencia" => array("type" => "tinyint", "required" => true, "references" => array("table" => $this->pluginPrefix."ciudades", "id" => "ciudadId", "text" => "ciudad", "cascadeDep" => array("id" => "departamentoId", "value" => "departamentoId")))
+                                ,"departamento" => array("type" => "tinyint", "isTableCol" => false, "hidden" => true, "edithidden" => true, "required" => true, "references" => array("table" => $this->pluginPrefix."departamentos", "id" => "departamentoId", "text" => "departamento"),
+                                                         "dataEvents" => array(
+                                                                                array("type" => "change",
+                                                                                      "fn" => "@function(e) {"
+                                                                                                    . "var thisval = $(e.target).val();"
+                                                                                                    . "jQuery.post("
+                                                                                                        . "  'admin-ajax.php',"
+                                                                                                        . " { action: 'action', id: '" . $this->view . "', method: 'getCities', filter: thisval }"
+                                                                                                    . ")"
+                                                                                                    . " .done(function( msg ) {"
+                                                                                                                . "var data = jQuery.parseJSON(msg);"
+                                                                                                                . "var dropdown = jQuery('#ciudadRecidencia');"
+                                                                                                                . " dropdown.empty();"
+                                                                                                                . "var newOptions = {};"
+                                                                                                                . "for(xx in data.rows){"
+                                                                                                                   . "newOptions[data.rows[xx].id] = data.rows[xx].cell[1];"
+                                                                                                                . "}"
+                                                                                                                . "jQuery.each(newOptions, function(key, value) {"
+                                                                                                                . " dropdown.append(jQuery('<option></option>')"
+                                                                                                                . "     .attr('value', key).text(value));"
+                                                                                                                . " });"
+                                                                                                        . "});"
+                                                                                            . "}@"
+                                                                                    )
+                                                                                )
+                                                        )
+                                ,"ciudadRecidenciaId" => array("type" => "tinyint", "required" => true, "references" => array("table" => $this->pluginPrefix."ciudades", "id" => "ciudadId", "text" => "ciudad", "cascadeDep" => array("id" => "departamentoId", "value" => "departamentoId")))
                                 ,"localidad" => array("type" => "varchar", "hidden" => true, "edithidden" => true, "required" => true)
                                 ,"barrio" => array("type" => "varchar", "hidden" => true, "edithidden" => true, "required" => true)
-                                ,"integranteId" => array("type" => "int", "PK" => 0, "required" => false, "hidden" => true,  "autoIncrement" => true, "toolTip" => array("type" => "cell", "cell" => 2) )
                             )
                     );
             return $data;

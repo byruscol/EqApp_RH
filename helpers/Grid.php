@@ -177,32 +177,13 @@ class Grid extends DBManager
                                                     'edittype' => 'select',
                                                     'formatter' => 'select',
                                                     'stype' => 'select',
-                                                    'editoptions' => array( "value" => "@'".$QueryData."'@"
-                                                                            , "dataEvents"  => array(
-                                                                                                array("type" => "change"
-                                                                                                    , "fn" => "@function(e) {"
-                                                                                                    . "         var thisval = $(e.target).val();"
-                                                                                                    . "         jQuery.post( 'admin-ajax.php',{action: 'action', id: '" . $this->view . "', 'method': 'getCities', 'filter': thisval})"
-                                                                                                    . "         .done(function( data ) {" 
-                                                                                                    . "                     var jsonData = eval(data);"
-                                                                                                    . "                     var dropdown = jQuery('#ciudadRecidencia');"
-                                                                                                    . "                     dropdown.empty();"
-                                                                                                    . "                     var newOptions = {};"
-                                                                                                    . "                     var key = jsonData.metaData.key,"
-                                                                                                    . "                     val = jsonData.metaData.value;"
-                                                                                                    . "                     for(xx in jsonData.data){"
-                                                                                                    . "                         newOptions[jsonData.data[xx].key] = jsonData.data[xx].val;"
-                                                                                                    . "                     }"
-                                                                                                    ."                      jQuery.each(newOptions, function(key, value) {"
-                                                                                                    ."                      dropdown.append(jQuery('<option></option>')"
-                                                                                                    ."                        .attr('value', value).text(key));"
-                                                                                                    ."                      });"
-                                                                                                    . "         });}@")
-                                                                                                ) 
-                                                                        ),
+                                                    'editoptions' => array( "value" => "@'".$QueryData."'@"),
                                                     'searchoptions' => array('value' => "@'".$QueryData."'@")
     						)
                                             );
+                                if(array_key_exists('dataEvents', $value)){
+                                    $model['editoptions']['dataEvents'] = $value['dataEvents'];
+                                }
     				break;
     			case 'longblob':
     		

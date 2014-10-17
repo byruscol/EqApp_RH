@@ -109,6 +109,7 @@ abstract class DBManager{
                     case "del": $this->result = $this->conn->delete( $this->DBOper["table"], $this->DBOper["filter"]); break;
                     default: $this->executeQuery();
                 }
+                //echo $this->conn->last_query;
                 $queryFail = $this->conn->print_error();
                 if(!empty($queryFail))
                     echo $queryFail . " - SQL:[".$this->conn->last_query."]";
