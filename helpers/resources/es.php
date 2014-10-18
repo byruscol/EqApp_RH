@@ -1,6 +1,7 @@
 <?php
 $locale = array(
-                "accept" => "Aceptar"
+                "academica" => "Información academica"
+                ,"accept" => "Aceptar"
                 ,"accionesinmediatassa" => "Acciones inmediatas"
                 ,"actionRequest" => "Solicitudes de acción"
                 ,"actionRequestId" => "No."
@@ -38,6 +39,7 @@ $locale = array(
                 ,"estadonc" => "Estado"
                 ,"ExpiredStatus" => "Oportunidad"
                 ,"ext" => "Tipo archivo"
+                ,"familia" => "Familia"
                 ,"failCode" => "Código no valido."
                 ,"fechaNacimiento" => "Fecha nacimiento"
                 ,"fuentenc" => "Fuente"
@@ -51,7 +53,9 @@ $locale = array(
                 ,"gestionsa" => "Gestión"
                 ,"HSEQDocs" => "Documentos HSEQ"
                 ,"identificacion" => "Identificación"
+                ,"idiomas" => "Idiomas"
                 ,"integrantes" => "Integrantes"
+                ,"laboral" => "Información laboral"
                 ,"loadCodes" => "Inscribir códigos"
                 ,"LoadingFile" => "Cargando archivo..."
                 ,"localidad" => "Localidad"

@@ -93,3 +93,8 @@ input[type="text"]{
 label.error {
     color: red;
 }
+
+button, input, optgroup, select, textarea {
+    color: #555555;
+    font: inherit;
+}

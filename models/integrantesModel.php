@@ -39,7 +39,7 @@ class integrantes extends DBManagerModel{
         $this->updateRecord($this->entity(), $_POST, array("integranteId" => $_POST["integranteId"])/*, array("columnValidateEdit" => "assigned_user_id")*/);
     }
     public function del(){
-        $this->delRecord($this->entity(), array("integranteId" => $_POST["id"]), array("columnValidateEdit" => "assigned_user_id"));
+        $this->delRecord($this->entity(), array("integranteId" => $_POST["id"])/*, array("columnValidateEdit" => "assigned_user_id")*/);
     }
 
     public function detail($params = array()){
@@ -92,8 +92,8 @@ class integrantes extends DBManagerModel{
                                                                                                     . ")"
                                                                                                     . " .done(function( msg ) {"
                                                                                                                 . "var data = jQuery.parseJSON(msg);"
-                                                                                                                . "var dropdown = jQuery('#ciudadRecidencia');"
-                                                                                                                . " dropdown.empty();"
+                                                                                                                . "var dropdown = jQuery('#ciudadRecidenciaId');"
+                                                                                                                . "dropdown.empty();"
                                                                                                                 . "var newOptions = {};"
                                                                                                                 . "for(xx in data.rows){"
                                                                                                                    . "newOptions[data.rows[xx].id] = data.rows[xx].cell[1];"

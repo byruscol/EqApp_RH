@@ -59,24 +59,13 @@ class Grid extends DBManager
         $DataArray = array();               
         $query = "SHOW COLUMNS FROM ".$enums["table"]." WHERE Field = '" . $enums["id"] . "'  " ;
         $Relation = $this->getDataGrid($query, null, null, null, null);
-        $DataArray = array();
-        $DataArray[""] = "--Seleccione--";
-        if(strpos($Relation["data"][0]->Type,'enum') !== false){
-            $enumList = explode(",", str_replace("'", "", substr($Relation["data"][0]->Type, 5, (strlen($Relation["data"][0]->Type)-6))));
-
-            foreach($enumList as $value){
-                    $DataArray[htmlspecialchars($value)] = htmlspecialchars(utf8_decode($value));
+        $e = str_replace(array("'","(",")","enum"),"", $Relation["data"][0]->Type);
+        $enumList = explode(",",$e);
+        foreach ( $enumList as $k){
+                    $DataArray[] = $k.":".$k;
             }
-        }
-
-
-        $replaceBlank = array('"','{','}','[');
-        $replaceSemicolon = array(',',']');
-
-        $DataArray = str_ireplace($replaceBlank,'',json_encode($DataArray/*, JSON_UNESCAPED_UNICODE*/));
-        $DataArray = str_ireplace($replaceSemicolon,';',$DataArray);
-
-        return $DataArray;
+        $data = implode(";", $DataArray);
+        return $data;
     }
     function colModelFromTable(){
     	$countCols = count($this->entity["atributes"]);
@@ -152,22 +141,17 @@ class Grid extends DBManager
                                     break;
                                     
                         case 'enum':
-    				/*$enumList = explode(",", str_replace("'", "", substr($cols["data"][$i]->Type, 5, (strlen($cols["data"][$i]->Type)-6))));
-    				$values = array();
-    				$values[""] = "--Seleccione--";
-    				foreach($enumList as $value){
-    					$values[htmlspecialchars($value)] = htmlspecialchars($value);
-    				}
-    					
+                                $enums = array("table" => $this->entity["tableName"], "id" => $col);
+                                $QueryData = $this->EnumData($enums);
     				$model = array_merge($model
     						,array(
-    								'edittype' => 'select',
-    								'formatter' => 'select',
-    								'stype' => 'select',
-    								'editoptions' => array( 'value' => $values ),
-    								'searchoptions' => array('value' => $values)
+                                                    'edittype' => 'select',
+                                                    'formatter' => 'select',
+                                                    'stype' => 'select',
+                                                    'editoptions' => array( "value" => "@'".$QueryData."'@"),
+                                                    'searchoptions' => array('value' => "@'".$QueryData."'@")
     						)
-    				);*/
+                                            );
     				break;
     			case "Referenced":
     				$QueryData = $this->RelationShipData($value["references"]);

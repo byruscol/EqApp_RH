@@ -15,28 +15,47 @@
     <div class="span12"></div>
     <div id="tabs" class="span11">
         <ul id="nonConformityTab" class="nav nav-tabs">
-        <li class="active"><a href="#notesTab" data-toggle="tab"><?php echo $resource->getWord("notes"); ?></a></li>     
-        <li><a href="#tasksTab" data-toggle="tab"><?php echo $resource->getWord("tasks"); ?></a></li>  
-        <li><a href="#filesTab" data-toggle="tab"><?php echo $resource->getWord("files"); ?></a></li>
+        <li class="active"><a href="#familiaTab" data-toggle="tab"><?php echo $resource->getWord("familia"); ?></a></li>     
+        <li><a href="#laboralTab" data-toggle="tab"><?php echo $resource->getWord("laboral"); ?></a></li>  
+        <li><a href="#academicaTab" data-toggle="tab"><?php echo $resource->getWord("academica"); ?></a></li>
+        <li><a href="#idiomasTab" data-toggle="tab"><?php echo $resource->getWord("idiomas"); ?></a></li>
         </ul>
         <div id="TabContent" class="tab-content">
-            <div class="tab-pane fade active" id="notesTab">
+            <div class="tab-pane fade active" id="familiaTab">
                 <div class="spacer10"></div>
                 <div class="ui-jqgrid ui-widget ui-corner-all clear-margin span12" dir="ltr" style="">
-                    <table id="notes"></table>
-                    <div id="notesPager"></div>
+                    <table id="familia"></table>
+                    <div id="familiaPager"></div>
                 </div>
             </div>
-            <div class="tab-pane fade active" id="tasksTab">
+            <div class="tab-pane fade active" id="laboralTab">
                 <div class="spacer10"></div>
                 <div class="jqGrid">
                     <div class="ui-jqgrid ui-widget ui-corner-all clear-margin span12" dir="ltr" style="">
-                        <table id="tasks"></table>
-                        <div id="tasksPager"></div>
+                        <table id="laboral"></table>
+                        <div id="laboralPager"></div>
                     </div>
                 </div>
             </div>
-            <div class="tab-pane fade active" id="filesTab">
+            <div class="tab-pane fade active" id="academicaTab">
+                <div class="spacer10"></div>
+                <div class="jqGrid">
+                    <div class="ui-jqgrid ui-widget ui-corner-all clear-margin span12" dir="ltr" style="">
+                        <table id="academica"></table>
+                        <div id="academicaPager"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade active" id="idiomasTab">
+                <div class="spacer10"></div>
+                <div class="jqGrid">
+                    <div class="ui-jqgrid ui-widget ui-corner-all clear-margin span12" dir="ltr" style="">
+                        <table id="idiomas"></table>
+                        <div id="idiomasPager"></div>
+                    </div>
+                </div>
+            </div>
+            <!--<div class="tab-pane fade active" id="filesTab">
                 <div class="spacer10"></div>
                 <div class="span12">
                     <div class="span8">
@@ -51,10 +70,10 @@
                         <form id="uploadFiles" class="form-horizontal" enctype="multipart/form-data" method="post">
                             <fieldset>
 
-                            <!-- Form Name -->
+                            
                             <legend><?php echo $resource->getWord("uploadFile"); ?></legend>
 
-                            <!-- Text input-->
+                            
                             <div class="control-group">
                               <div class="controls">
                                 <input id="name" name="name" placeholder="<?php echo $resource->getWord("fileName"); ?>" class="input-xlarge" required="true" type="text">
@@ -63,14 +82,14 @@
                               </div>
                             </div>
                             <br/>
-                            <!-- Text input-->
+                            
                             <div class="control-group">
                               <div class="controls">
                                   <input type="file" id="file" name="file" class="btn btn-default" required="true">
                                 </div>
                               </div>
                               <br/>
-                            <!-- Button -->
+                            
                             <div class="control-group">
                               <div class="controls">
                                 <button id="submit" name="submit" class="btn btn-primary"><?php echo $resource->getWord("accept"); ?></button>
@@ -81,7 +100,7 @@
                         </form>
                     </div>
                 </div>
-            </div>
+            </div>-->
         </div>
     </div> 
 </div>
