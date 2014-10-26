@@ -7,9 +7,9 @@ class integrantes extends DBManagerModel{
     public function getList($params = array()){
         $entity = $this->entity();
         $start = $params["limit"] * $params["page"] - $params["limit"];
-        $query = "SELECT `integranteId`, `identificacion`, `nombre`, `apellido`
-                        , `genero`, `rhId`, `fechaNacimiento`, telefono, celular
-                        ,  email, emailPersonal, `direccion`, departamentoId departamento
+        $query = "SELECT `integranteId`, tipoIdentificacion, `identificacion`, activo, `nombre`, `apellido`
+                        , `genero`, `rhId`, `fechaNacimiento`, DATE_FORMAT(FROM_DAYS(DATEDIFF(NOW(), fechaNacimiento)), '%Y')+0 edad
+                        , telefono, celular,  email, emailPersonal, `direccion`, departamentoId departamento
                         , `ciudadRecidenciaId`, `localidad`
                         , `barrio` 
                   FROM ".$entity["tableName"]." i
@@ -32,6 +32,36 @@ class integrantes extends DBManagerModel{
         return $cities;
     }
     
+    public function getIntegrantesFromName($params){
+        $entity = $this->entity();
+        $query = "SELECT `integranteId`, CONCAT(`nombre`, ' ', `apellido`) nombre 
+                  FROM ".$entity["tableName"]." i
+                  WHERE `deleted` = 0 AND (nombre LIKE '%". $params["filter"] ."%' OR apellido LIKE '%". $params["filter"] ."%')";
+         
+        $responceGrid = $this->getDataGrid($query, NULL, NULL , "2", "ASC");
+        
+        $responce = array(
+                            "data" =>  array("query" => "Unit"
+                                            , "suggestions" => array()
+                                        )
+                            ,"customResponce" => true
+                        );
+        
+        for($i = 0; $i < $responceGrid["totalRows"]; $i++){
+            $responce["data"]["suggestions"][] = array("value" => $responceGrid["data"][$i]->nombre
+                                                    ,"data" => $responceGrid["data"][$i]->integranteId
+                                                  );
+        }
+        
+        return $responce;
+    }
+    
+    public function getIntegrantesFamiliares($params = array()){
+        require "familiaresModel.php";
+        $familiares = new familiares();
+        return $familiares->getIntegrantesFamiliares($params);
+    }
+    
     public function add(){
         $this->addRecord($this->entity(), $_POST, array("date_entered" => date("Y-m-d H:i:s"), "created_by" => $this->currentUser->ID));
     }
@@ -44,20 +74,16 @@ class integrantes extends DBManagerModel{
 
     public function detail($params = array()){
         $entity = $this->entity();
-        $query = "SELECT n.`nonConformityId` , n.`name` , n.`description` , `status` `estadonc` 
-                        , `display_name` `assigned_user_id` , `nombre_del_clientenc` , `telefononc` 
-                        , `source` `fuentenc` , `generality` `generalidadnc` , `office` `sedenc` 
-                        , c.`classification` `clasificacion_nc_c` , m.`management` `gestion`, customerType `tipo_cliente_c`
-                    FROM ".$entity["tableName"]." n
-                    LEFT JOIN ".$this->pluginPrefix."status s ON s.statusid = n.estadonc
-                    LEFT JOIN ".$this->wpPrefix."users u ON u.ID = n.assigned_user_id
-                    LEFT JOIN ".$this->pluginPrefix."sources sc ON sc.sourceId = n.fuentenc
-                    LEFT JOIN ".$this->pluginPrefix."generalities g ON g.generalityId = n.generalidadnc
-                    LEFT JOIN ".$this->pluginPrefix."offices o ON o.officeId = n.sedenc
-                    LEFT JOIN ".$this->pluginPrefix."classifications c ON c.classificationId = clasificacion_nc_c
-                    LEFT JOIN ".$this->pluginPrefix."managements m ON m.managementId = n.gestion
-                    LEFT JOIN ".$this->pluginPrefix."customerTypes ct ON ct.customerTypeId = n.tipo_cliente_c
-                    WHERE n.`integranteId` = " . $params["filter"];
+        $query = "  SELECT `integranteId`, tipoIdentificacion, `identificacion`, activo, `nombre`, `apellido`
+                                    , `genero`, `rhId`, `fechaNacimiento`, DATE_FORMAT(FROM_DAYS(DATEDIFF(NOW(), fechaNacimiento)), '%Y')+0 edad
+                                    , telefono, celular
+                                    ,  email, emailPersonal, `direccion`, d.departamento
+                                    ,  c.ciudad ciudadRecidenciaId, `localidad`
+                                    , `barrio` 
+                    FROM ".$entity["tableName"]." i
+                       JOIN ".$this->pluginPrefix."ciudades c ON c.ciudadId = i.ciudadRecidenciaId
+                       JOIN ".$this->pluginPrefix."departamentos d ON d.departamentoId = c.departamentoId
+                    WHERE i.`integranteId` = " . $params["filter"];
         $this->queryType = "row";
         return $this->getDataGrid($query);
     }
@@ -69,13 +95,16 @@ class integrantes extends DBManagerModel{
                             //,"columnValidateEdit" => "assigned_user_id"
                             ,"entityConfig" => $CRUD
                             ,"atributes" => array(
-                                "integranteId" => array("type" => "int", "PK" => 0, "required" => false, readOnly => true, "autoIncrement" => true, "toolTip" => array("type" => "cell", "cell" => 2) )
+                                "integranteId" => array("type" => "int", "PK" => 0, "required" => false, "readOnly" => true, "autoIncrement" => true, "toolTip" => array("type" => "cell", "cell" => 2) )
+                                ,"tipoIdentificacion" => array("type" => "enum", "required" => true)
                                 ,"identificacion" => array("type" => "varchar", "required" => true)
+                                ,"activo" => array("type" => "enum", "required" => true)
                                 ,"nombre" => array("type" => "varchar", "required" => true)
                                 ,"apellido" => array("type" => "varchar", "required" => true)
                                 ,"genero" => array("type" => "enum", "hidden" => true, "edithidden" => true, "required" => true)
                                 ,"rhId" => array("type" => "tinyint", "hidden" => true, "edithidden" => true, "required" => true, "references" => array("table" => $this->pluginPrefix."rh", "id" => "rhId", "text" => "rh"))
                                 ,"fechaNacimiento" => array("type" => "date", "hidden" => true, "edithidden" => true, "hidden" => true, "edithidden" => true, "required" => true)
+                                ,"edad" => array("type" => "tinyint", "isTableCol" => false)
                                 ,"telefono" => array("type" => "varchar", "required" => true)
                                 ,"celular" => array("type" => "varchar", "required" => true)
                                 ,"email" => array("type" => "email", "required" => true)

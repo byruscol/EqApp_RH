@@ -33,8 +33,9 @@ function integrantes() {
     require_once($viewFile);
 }
 
-function request() {
+function familiares() {
     global $pluginPath;
+    global $pluginURL;
     global $viewFile;
     global $resource;
     require_once($viewFile);

@@ -1,11 +1,39 @@
 <div class="row-fluid">
     <div class="span12">
         <table class="table table-bordered table-condensed">
-            <tr><th>{nonConformityId-Label}</th><td>{nonConformityId}</td><th>{name-Label}</th><td colspan="5">{name}</td></tr>
-            <tr><th>{estadonc-Label}</th><td>{estadonc}</td><th>{nombre_del_clientenc-Label}</th><td colspan="5">{nombre_del_clientenc}</td></tr>
-            <tr><th>{assigned_user_id-Label}</th><td>{assigned_user_id}</td><th>{telefononc-Label}</th><td>{telefononc}</td><th>{fuentenc-Label}</th><td>{fuentenc}</td><th>{tipo_cliente_c-Label}</th><td>{tipo_cliente_c}</td></tr>
-            <tr><th>{generalidadnc-Label}</th><td>{generalidadnc}</td><th>{sedenc-Label}</th><td>{sedenc}</td><th>{clasificacion_nc_c-Label}</th><td>{clasificacion_nc_c}</td><th>{gestion-Label}</th><td>{gestion}</td></tr>
-            <tr><th>{description-Label}</th><td colspan="7">{description}</td></tr>
+            <tr>
+                <th>{integranteId-Label}</th><td>{integranteId}</td>
+                <th>{tipoIdentificacion-Label}</th><td>{tipoIdentificacion}</td>
+                <th>{identificacion-Label}</th><td>{identificacion}</td>
+            </tr>
+            <tr>
+                <th>{activo-Label}</th><td>{activo}</td>
+                <th>{nombre-Label}</th><td>{nombre}</td>
+                <th>{apellido-Label}</th><td>{apellido}</td>
+            </tr>
+            <tr>
+                <th>{genero-Label}</th><td>{genero}</td>
+                <th>{rhId-Label}</th><td>{rhId}</td>
+                <th>{fechaNacimiento-Label}</th><td>{fechaNacimiento}</td>
+            </tr>
+            <tr>
+                <th>{edad-Label}</th><td>{edad}</td>
+                <th>{telefono-Label}</th><td>{telefono}</td>
+                <th>{celular-Label}</th><td>{celular}</td>
+            </tr>
+            <tr>
+                <th>{email-Label}</th><td>{email}</td>
+                <th>{emailPersonal-Label}</th><td>{emailPersonal}</td>
+                <th>{direccion-Label}</th><td>{direccion}</td>
+            </tr>
+            <tr>
+                <th>{departamento-Label}</th><td>{departamento}</td>
+                <th>{ciudadRecidenciaId-Label}</th><td>{ciudadRecidenciaId}</td>
+                <th>{localidad-Label}</th><td>{localidad}</td>
+            </tr>
+            <tr>
+                <th>{barrio-Label}</th><td colspan="6">{barrio}</td>
+            </tr>
         </table>
     </div>
 </div>

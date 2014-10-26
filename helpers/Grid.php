@@ -199,19 +199,7 @@ class Grid extends DBManager
                                             ."var icon = '".$this->pluginURL."/images/'+rowObject[8];"
                                             . "return '<a title=\"'+cellvalue+'\" href=\"".$this->pluginURL."download.php?controller=".$this->view."&id='+cellvalue+'\" target=\"_blank\"> <img src=\"'+icon+'\"/> </a>'}@";
                 }    
-                    
-               /* test tooltip description
-                * if(array_key_exists('toolTip', $value) && is_array($value['toolTip'])){
-                    $return = "";
-                    switch($value['toolTip']["type"]){
-                        case "cell": $return = "rawObject[".$value['toolTip']["cell"]."]";break;
-                        default: $return = '"'.$value['toolTip']["custom"].'"';break;
-                    }
-                    
-                    
-                    $model["cellattr"] = "@function (rowId, val, rawObject, cm, rdata) { var tip = noHTMLTags(".$return."); return ' title = ' + tip; }@";
-                }   */ 
-                    
+                                    
                 if($value['text']){
     			$model["edittype"] = "textarea";
     			$model["editoptions"]["rows"] = 6; 
@@ -415,10 +403,6 @@ class Grid extends DBManager
                                                             title: $.jgrid.nav.viewtitle,
                                                             buttonicon:"ui-icon-document", 
                                                             onClickButton: function(){ 
-                                                                /*var str = "";
-                                                                for(xx in id){
-                                                                    str += xx + " -> " + id[xx] + "<br/>";
-                                                                }*/
                                                                 var rowid = jQuery("#' . $this->view . '").jqGrid("getGridParam", "selrow");
                                                                 if(rowid){
                                                                     $.get( "'.$this->pluginURL.'views/'.$this->view.'View/'.$this->view.'Detail.php" )
@@ -444,7 +428,7 @@ class Grid extends DBManager
                                                                            
                                                                             jQuery("<div>"+data+"</div>").dialog({
                                                                                 height: 400,
-                                                                                width: "95%",
+                                                                                width: "75%",
                                                                                 modal: true,
                                                                                 title: $.jgrid.nav.viewtitle
                                                                               });

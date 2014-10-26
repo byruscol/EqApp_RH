@@ -169,6 +169,7 @@ abstract class DBManager{
 
         $insert = false;
         $addData = $auditData;
+        //echo $entity["tableName"]."<br>";
         foreach($entity["atributes"] as $key => $value){
             if((!array_key_exists("autoIncrement", $value) || !$value["autoIncrement"])
                 && !array_key_exists($key, $addData)
@@ -308,7 +309,6 @@ abstract class DBManager{
             }
             if(count($updateData) > 0)
             {
-
                 $pkId = implode(",", $PK);
                 foreach($auditData as $key => $value){
                     $this->queryType = "add";
@@ -318,22 +318,22 @@ abstract class DBManager{
 
                     $this->execute();
                 }
-
+                               
                 $this->queryType = "edit";
                 $this->DBOper["table"] = $entity["tableName"];
                 $this->DBOper["filter"] = $currentRecord["where"];
                 $this->DBOper["data"]  = $updateData;
-
+                
                 $this->execute();
             }
         }
     }
 
-    protected function uploadFile($fileId, $file){
+    protected function uploadFile($fileId, $file, $table = 'files_data'){
         
         if($gestor = fopen($file,'rb')){
 
-            $sql = "INSERT INTO `".$this->pluginPrefix."files_data`(`fileId`, `data`) VALUES (:fileId,:data)";
+            $sql = "INSERT INTO `".$this->pluginPrefix.$table."` (`fileId`, `data`) VALUES (:fileId,:data)";
             $q = $this->gbd->prepare($sql);
             $q->bindParam(':fileId',$fileId);
             $q->bindParam(':data',$gestor,PDO::PARAM_LOB);
@@ -344,7 +344,7 @@ abstract class DBManager{
         }
     }
         
-    public function rendererFile($fileId){
+    public function rendererFile($fileId, $return = false){
         try {
             $sql = "SELECT `name`, `ext`, `mime`, `size`, `data`, `fileName`
                             FROM `".$this->pluginPrefix."files` f 
@@ -359,14 +359,18 @@ abstract class DBManager{
             $q->bindColumn(4, $size);
             $q->bindColumn(5, $data, PDO::PARAM_LOB);
             $q->bindColumn(6, $fileName);
-            echo $name;
-            while($q->fetch())
+            //echo $name;
+            if($q->fetch())
             {
-                header("Content-Type: ". $mime);
-                header("Content-Length: ". $size);
-                header("Content-Disposition: attachment; filename=". $fileName);
-
-                echo $data;
+                
+                if($return)
+                    return array("mime" => $mime, "data" => $data);
+                else{
+                    header("Content-Type: ". $mime);
+                    header("Content-Length: ". $size);
+                    header("Content-Disposition: attachment; filename=". $fileName);
+                    echo $data;
+                }
             }
         } catch (PDOException $e) {
             print "¡Error!: " . $e->getMessage() . "<br/>";

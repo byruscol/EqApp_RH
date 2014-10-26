@@ -6,7 +6,7 @@ class mainController //extends resources
 {
     private $pluginPath = "";
     private $pluginURL = "";
-    private $model;
+    public $model;
     private $viewObject;
     private $prefix;
     private $PrefixPlugin;
@@ -167,7 +167,10 @@ class mainController //extends resources
                         ,"sord" => $sord
                         ,"limit" => $limit
                     );
-
+        
+        if(array_key_exists('query', $_POST))
+            $params["filter"] = $_POST["query"];
+        
         if(array_key_exists('filter', $_POST))
             $params["filter"] = $_POST["filter"];
 
@@ -180,8 +183,11 @@ class mainController //extends resources
         else{
             $grid = $this->model->getList($params);
         }
-
-        if(is_array($grid["data"])){
+        
+        if($grid["customResponce"]){
+            $responce = $grid["data"];
+        }
+        elseif(is_array($grid["data"])){
             if( $grid["totalRows"] > 0 && $limit > 0)
                     $total_pages = ceil($grid[totalRows]/$limit);
             else 
@@ -216,6 +222,7 @@ class mainController //extends resources
                 $responce->row[$key]=$value;
             }
         }
+        
         echo json_encode($responce, JSON_UNESCAPED_UNICODE);
         die();
     }

@@ -113,6 +113,7 @@ class files extends DBManagerModel{
             $nameArray = array_pop($nameParts);
             $fileName = implode("_",$nameParts);
             $fileName = str_replace(array("'",".",",","*","@","?","!"), "_",$fileName);
+            $_POST["name"] = (empty($_POST["name"]))? $fileName : $_POST["name"];
             $_POST["mime"] =  $_FILES["file"]["type"];
             $_POST["size"] =  $_FILES["file"]["size"];
             
@@ -134,7 +135,10 @@ class files extends DBManagerModel{
         }
         echo json_encode($rtnData);
     }
+    
     public function edit(){
+        
+        
     }
     public function del(){
         $this->delRecord($this->entity(), array("fileId" => $_POST["id"]), array("columnValidateEdit" => "created_by"));
@@ -153,24 +157,25 @@ class files extends DBManagerModel{
                         ,"date_entered" => array("type" => "datetime", "required" => false, "readOnly" => true, "isTableCol" => false )
                         ,"created_user" => array("type" => "varchar", "required" => false, "readOnly" => true, "update" => false, "isTableCol" => false)
                         ,"ext" => array("type" => "varchar", "required" => false, "hidden" => true)
+                        ,"mime" => array("type" => "varchar", "required" => false, "hidden" => true)
                         ,"size" => array("type" => "bigint", "required" => false, "hidden" => true)
                         ,"created_by" => array("type" => "int", "required" => false, "hidden" => true )
                         ,"icon" => array("type" => "varchar", "required" => false, "hidden" => true, "isTableCol" => false)
                     )
                     ,"relationship" => array(
-                        "nonConformity" => array(
-                                    "tableName" => $this->pluginPrefix."nonConformities_files"
-                                    ,"parent" => array("tableName" => $this->pluginPrefix."nonConformities", "Id" => "nonConformityId")
+                        "fotoIntegrantes" => array(
+                                    "tableName" => $this->pluginPrefix."fotosIntegrantes"
+                                    ,"parent" => array("tableName" => $this->pluginPrefix."integrantes", "Id" => "integranteId")
                                     ,"atributes" => array(
-                                            "nonConformityId" => array("type" => "int", "PK" => 0)
+                                            "integranteId" => array("type" => "int", "PK" => 0)
                                             ,"fileId" => array("type" => "int", "PK" => 0)
                                        )
                                 )
-                        ,"request" => array(
-                                    "tableName" => $this->pluginPrefix."nonConformities_files"
-                                    ,"parent" => array("tableName" => $this->pluginPrefix."nonConformities", "Id" => "nonConformityId")
+                        ,"fotoFamiliar" => array(
+                                    "tableName" => $this->pluginPrefix."fotosFamiliares"
+                                    ,"parent" => array("tableName" => $this->pluginPrefix."familiares", "Id" => "familiarId")
                                     ,"atributes" => array(
-                                        "nonConformityId" => array("type" => "int", "PK" => 0)
+                                        "familiarId" => array("type" => "int", "PK" => 0)
                                         ,"fileId" => array("type" => "int", "PK" => 0)
                                     )
                                 )

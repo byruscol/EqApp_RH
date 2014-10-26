@@ -11,13 +11,13 @@ $params = array("numRows" => 10
                                         array("type" => "onSelectRow"
                                                   ,"function" => 'function(id) {
                                                                     if(id != null) {
-                                                                           /* var postDataObj = jQuery("#notes").jqGrid("getGridParam","postData");
+                                                                            var postDataObj = jQuery("#familiares").jqGrid("getGridParam","postData");
                                                                             postDataObj["filter"] = id;
                                                                             postDataObj["parent"] = "'.$_GET["view"].'";
-                                                                            jQuery("#notes").jqGrid("setGridParam",{postData: postDataObj})
+                                                                            jQuery("#familiares").jqGrid("setGridParam",{postData: postDataObj})
                                                                                             .trigger("reloadGrid");
 
-                                                                            postDataObj = jQuery("#tasks").jqGrid("getGridParam","postData");
+                                                                            /*postDataObj = jQuery("#tasks").jqGrid("getGridParam","postData");
                                                                             postDataObj["filter"] = id;
                                                                             postDataObj["parent"] = "'.$_GET["view"].'";
                                                                             jQuery("#tasks").jqGrid("setGridParam",{postData: postDataObj})
