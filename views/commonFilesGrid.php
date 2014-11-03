@@ -19,11 +19,6 @@ jQuery('#uploadFiles')
     else{
         rowid = jQuery("#<?php echo $_GET["view"];?>").jqGrid("getGridParam", "selrow");
     }
-    
-    <?php 
-        if(isset($_GET["rowid"])) echo "rowid = " . $_GET["rowid"] .";";
-    ?>
-    
     if(rowid){
         var form = new FormData( this );
         if(jQuery("#parentId").length == 0)

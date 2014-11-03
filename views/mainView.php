@@ -19,13 +19,6 @@ if(!file_exists($viewFile)){
 	$viewFile = $pluginPath. "/views/basicView/basicView.php";
 }
 
-function PQRCustomerService(){
-    global $pluginPath;
-    global $viewFile;
-    global $resource;
-    require_once($viewFile);
-}
-
 function integrantes() {
     global $pluginPath;
     global $viewFile;
@@ -34,28 +27,6 @@ function integrantes() {
 }
 
 function familiares() {
-    global $pluginPath;
-    global $pluginURL;
-    global $viewFile;
-    global $resource;
-    require_once($viewFile);
-}
-
-function tasks() {
-    global $pluginPath;
-    global $viewFile;
-    global $resource;
-    require_once($viewFile);
-}
-
-function actionRequest() {
-    global $pluginPath;
-    global $viewFile;
-    global $resource;
-    require_once($viewFile);
-}
-
-function loadCodes() {
     global $pluginPath;
     global $pluginURL;
     global $viewFile;
