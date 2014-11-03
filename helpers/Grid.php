@@ -16,6 +16,9 @@ class Grid extends DBManager
     private $beforeShowForm = "";
     public $ValidateEdit = false;
     public $view;
+    public $validateFileSize = false;
+    public $validateCode = array();
+    public $fileId = array();
 
     function __construct($type = "table", $p, $v, $t) {
             global $resource;
@@ -83,7 +86,17 @@ class Grid extends DBManager
     		$this->colnames[] = $col;
     		
     		$hidden = (isset($value['hidden']) && $value['hidden'] == true)? true: false;
-    		
+                $editable = (isset($value['editable']))? isset($value['editable']): true;
+                $required = ($value['required'])? true: false;
+                $sortable = (isset($value['sortable']) )? $value['sortable']: true;
+                
+    		if($hidden){
+                    $editable = false;
+                    $required = false;
+                    $sortable = false;
+                }
+                
+                
     		$required = ($value['required'])? true: false;
     		
     		if($j <= $numCols){
@@ -100,7 +113,7 @@ class Grid extends DBManager
                                 'name'=> $col,
     				'index'=> $col,
     				'align' => 'center',
-    				'sortable' => true,
+    				'sortable' => $sortable,
     				'editable' => true,
     				'editrules' => array('required' => $required),
     				'formoptions' => $option,
@@ -169,8 +182,25 @@ class Grid extends DBManager
                                     $model['editoptions']['dataEvents'] = $value['dataEvents'];
                                 }
     				break;
-    			case 'longblob':
-    		
+    			case 'file':
+                                    $this->validateFileSize = true;
+                                    $this->fileId[] = $col;
+                                    $this->validateCode[] = "jQuery(document).on('change', '#".$col."', function() {
+                                                                if((jQuery('#".$col."')[0].files[0].size/".$value['validateAttr']["factor"].") > ".$value['validateAttr']["size"]."){
+                                                                    jQuery('#".$col."').replaceWith(jQuery('#".$col."').clone(true));
+                                                                    jQuery('#".$col."').val('');
+                                                                    alert('".sprintf($this->loc->getWord("fileSize"), $value['validateAttr']["size"], $value['validateAttr']["units"])."');
+                                                                }
+                                                              });";
+                                    
+                                    $model = array_merge($model
+    						,array(
+                                                    'edittype' => 'file',
+                                                    'formatter' => "FilesLinks",
+                                                    'search' => false,
+                                                    'editoptions' => array( "enctype" => "multipart/form-data" )
+    						)
+                                            );
     				break;
     		}
                 
@@ -193,11 +223,13 @@ class Grid extends DBManager
                     }
                 
                 if(array_key_exists('downloadFile', $value) && $value['downloadFile']["show"]){
+                    
                     $icon = $this->pluginURL."images/file.jpg";
-                        
+                    $rowObjectId = (isset($value['downloadFile']["rowObjectId"]))? $value['downloadFile']["rowObjectId"]:8;
+                    $viewParam = (isset($value['downloadFile']["view"]))? $value['downloadFile']["view"] : $this->view;
                     $model["formatter"] = "@function(cellvalue, options, rowObject){"
-                                            ."var icon = '".$this->pluginURL."/images/'+rowObject[8];"
-                                            . "return '<a title=\"'+cellvalue+'\" href=\"".$this->pluginURL."download.php?controller=".$this->view."&id='+cellvalue+'\" target=\"_blank\"> <img src=\"'+icon+'\"/> </a>'}@";
+                                            ."var icon = '".$this->pluginURL."/images/'+rowObject[".$rowObjectId."];"
+                                            . "return '<a title=\"'+cellvalue+'\" href=\"".$this->pluginURL."download.php?controller=".$viewParam."&id='+cellvalue+'\" target=\"_blank\"> <img src=\"'+icon+'\"/> </a>'}@";
                 }    
                                     
                 if($value['text']){
@@ -233,8 +265,20 @@ class Grid extends DBManager
     function gridBuilderFromTable() {
     	$this->colModelFromTable();
     	$title = $this->table;
-    	
-    	if(array_key_exists('postData', $this->params)){
+    	$files = (isset($this->params["CRUD"]["files"]) && $this->params["CRUD"]["files"])?true:false;
+    	$ajaxFileUpload = "";
+        if($files){
+            $filesCount = count($this->params["fileActions"]);
+            for($i = 0; $i < $filesCount; $i++){
+                $url = $this->params["fileActions"][$i]["url"];
+                $idFile = $this->params["fileActions"][$i]["idFile"];
+                $oper = $this->params["fileActions"][$i]["oper"];
+                $parentRelationShip = $this->params["fileActions"][$i]["parentRelationShip"];
+                $ajaxFileUpload  .= "ajaxFileUpload(result.parentId, '".$url."','".$idFile."','".$oper."','".$parentRelationShip."','".$this->view."');";
+            }
+        }
+        
+        if(array_key_exists('postData', $this->params)){
     		if(is_array($this->params['postData']))
     		{	
     			$pd = array();
@@ -303,7 +347,7 @@ class Grid extends DBManager
                     $grid = jQuery("#' . $this->view . '"),
                                     initDateEdit = function (elem) {
                                             setTimeout(function () {
-                                                    $(elem).datepicker({
+                                                    jQuery(elem).datepicker({
                                                             dateFormat: "yy-m-dd",
                                                             autoSize: true,
                                                             showOn: "button", 
@@ -329,7 +373,7 @@ class Grid extends DBManager
                                     //colNames:'.json_encode($this->colnames).',					
                                     colModel:'.$this->ColModel.',
                                     rowNum:'. $this->params["numRows"].',
-                                    rowList: ['. $this->params["numRows"] .', '. ($this->params["numRows"] * 2) .', '. ($this->params["numRows"] * 3) .'],
+                                    rowList: ['. $this->params["numRows"] .', '. ($this->params["numRows"] * 2) .', '. ($this->params["numRows"] * 3) .', "All"],
                                     pager: "#' . $this->view . 'Pager",						
                                     sortname: "'. $this->params["sortname"].'",
                                     viewrecords: true,
@@ -363,8 +407,13 @@ class Grid extends DBManager
                                                             viewPagerButtons: true,
                                                             width:"99%",
                                                             reloadAfterSubmit:true,
-                                                            closeAfterEdit: true
-                                                            ,afterShowForm:function(form){'.$this->beforeShowForm.' ;}
+                                                            closeAfterEdit: true,
+                                                            afterSubmit: function(response, postdata){
+                                                                var result = jQuery.parseJSON(response.responseText);
+                                                                '.$ajaxFileUpload.'
+                                                                return [true]
+                                                            },
+                                                            afterShowForm:function(form){'.$this->beforeShowForm.' ;}
                                                         }';
                                     }
                                     else
@@ -376,8 +425,13 @@ class Grid extends DBManager
                                                             viewPagerButtons: false,
                                                             width:"99%",
                                                             reloadAfterSubmit:true,
-                                                            closeAfterAdd: true
-                                                            ,afterShowForm:function(form){'.$this->beforeShowForm.' ;}
+                                                            closeAfterAdd: true,
+                                                            afterSubmit: function(response, postdata){
+                                                                var result = jQuery.parseJSON(response.responseText);
+                                                                '.$ajaxFileUpload.'
+                                                                return [true]
+                                                            },
+                                                            afterShowForm:function(form){'.$this->beforeShowForm.' ;}
                                                         }';
                                     }else
                                         $grid .= ',{}';
@@ -397,6 +451,17 @@ class Grid extends DBManager
                                                             , sopt: ["eq", "ne", "lt", "le", "gt", "ge", "bw", "bn", "ew", "en", "cn", "nc", "nu", "nn", "in", "ni"]
                                                             , width:"99%"
                                                         })';
+                                            
+                                            if($this->entity["entityConfig"]["excel"]){
+                                                    $grid .= '.navButtonAdd("#' . $this->view . 'Pager",{
+                                                         caption:"Export to Excel",
+                                                         id:"csv_' . $this->view . '",
+                                                         onClickButton : function () {
+                                                             $("#' . $this->view . '").jqGrid("exportarExcelCliente",{nombre:"HOJATEST",formato:"excel"});
+                                                         }
+                                                      })
+                                                    '; 
+                                             }
                                                 if($this->entity["entityConfig"]["view"]){     
                                                     $grid .= '.navSeparatorAdd("#' . $this->view . 'Pager").navButtonAdd("#' . $this->view . 'Pager",{
                                                             caption:"", 
@@ -449,8 +514,13 @@ class Grid extends DBManager
                                                             position:"last"
                                                         })';
                                                 }
-                            $grid .= '})';
-
+                            $grid .= '});';
+            if($this->validateFileSize){
+                $validateCount = count($this->validateCode);
+                for($i = 0; $i < $validateCount; $i++){
+                    $grid .=$this->validateCode[$i];
+                }
+            }
             echo  $grid;
 	}
 }

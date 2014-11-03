@@ -7,17 +7,34 @@ class integrantes extends DBManagerModel{
     public function getList($params = array()){
         $entity = $this->entity();
         $start = $params["limit"] * $params["page"] - $params["limit"];
-        $query = "SELECT `integranteId`, tipoIdentificacion, `identificacion`, activo, `nombre`, `apellido`
+        $query = "SELECT i.`integranteId`, tipoIdentificacion, `identificacion`, activo, `nombre`, `apellido`
                         , `genero`, `rhId`, `fechaNacimiento`, DATE_FORMAT(FROM_DAYS(DATEDIFF(NOW(), fechaNacimiento)), '%Y')+0 edad
                         , telefono, celular,  email, emailPersonal, `direccion`, departamentoId departamento
                         , `ciudadRecidenciaId`, `localidad`
-                        , `barrio` 
+                        , `barrio`, if(h.Hijos IS NULL ,0, h.Hijos) Hijos, '' foto
                   FROM ".$entity["tableName"]." i
                        JOIN ".$this->pluginPrefix."ciudades c ON c.ciudadId = i.ciudadRecidenciaId
+                       LEFT JOIN (
+                            SELECT integranteId, COUNT(1) Hijos
+                            FROM apps.wp_rh_familiares
+                            WHERE tipo = 'Hijo'
+                            GROUP BY integranteId
+                        )h ON h.integranteId = i.integranteId
                   WHERE `deleted` = 0";
         
-        if(array_key_exists('where', $params))
-            $query .= " AND (". $this->buildWhere($params["where"]) .")";
+        if(array_key_exists('where', $params)){
+            if (is_array( $params["where"]->rules )){
+                $countRules = count($params["where"]->rules);
+                for($i = 0; $i < $countRules; $i++){
+                    switch($params["where"]->rules[$i]->field ){
+                        case "created_by": $params["where"]->rules[$i]->field = "display_name"; break;
+                        case "edad": $params["where"]->rules[$i]->field = "DATE_FORMAT(FROM_DAYS(DATEDIFF(NOW(), fechaNacimiento)), '%Y')+0"; break;
+                    }
+                }
+            }
+            
+           $query .= " AND (". $this->buildWhere($params["where"]) .")";
+        }
         
         return $this->getDataGrid($query, $start, $params["limit"] , $params["sidx"], $params["sord"]);
     }
@@ -64,9 +81,11 @@ class integrantes extends DBManagerModel{
     
     public function add(){
         $this->addRecord($this->entity(), $_POST, array("date_entered" => date("Y-m-d H:i:s"), "created_by" => $this->currentUser->ID));
+        echo json_encode(array("parentId" => $this->LastId));
     }
     public function edit(){
         $this->updateRecord($this->entity(), $_POST, array("integranteId" => $_POST["integranteId"])/*, array("columnValidateEdit" => "assigned_user_id")*/);
+        echo json_encode(array("parentId" => $_POST["integranteId"]));
     }
     public function del(){
         $this->delRecord($this->entity(), array("integranteId" => $_POST["id"])/*, array("columnValidateEdit" => "assigned_user_id")*/);
@@ -104,7 +123,7 @@ class integrantes extends DBManagerModel{
                                 ,"genero" => array("type" => "enum", "hidden" => true, "edithidden" => true, "required" => true)
                                 ,"rhId" => array("type" => "tinyint", "hidden" => true, "edithidden" => true, "required" => true, "references" => array("table" => $this->pluginPrefix."rh", "id" => "rhId", "text" => "rh"))
                                 ,"fechaNacimiento" => array("type" => "date", "hidden" => true, "edithidden" => true, "hidden" => true, "edithidden" => true, "required" => true)
-                                ,"edad" => array("type" => "tinyint", "isTableCol" => false)
+                                ,"edad" => array("type" => "tinyint", "required" => false, "isTableCol" => false, "readOnly" => true)
                                 ,"telefono" => array("type" => "varchar", "required" => true)
                                 ,"celular" => array("type" => "varchar", "required" => true)
                                 ,"email" => array("type" => "email", "required" => true)
@@ -139,6 +158,8 @@ class integrantes extends DBManagerModel{
                                 ,"ciudadRecidenciaId" => array("type" => "tinyint", "required" => true, "references" => array("table" => $this->pluginPrefix."ciudades", "id" => "ciudadId", "text" => "ciudad", "cascadeDep" => array("id" => "departamentoId", "value" => "departamentoId")))
                                 ,"localidad" => array("type" => "varchar", "hidden" => true, "edithidden" => true, "required" => true)
                                 ,"barrio" => array("type" => "varchar", "hidden" => true, "edithidden" => true, "required" => true)
+                                ,"Hijos" => array("type" => "int", "required" => false,"hidden" => false, "edithidden" => true, "isTableCol" => false)
+                                ,"foto" => array("type" => "file", "validateAttr" => array("size" => 50, "units" => "MB", "factor" => 1024), "required" => false,"hidden" => true, "edithidden" => true, "isTableCol" => false)
                             )
                     );
             return $data;

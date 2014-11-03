@@ -60,46 +60,6 @@ class files extends DBManagerModel{
         return $data;
     }
 
-    public function getTasksFiles($params = array()){
-        $DataArray= array();
-        $query = "SELECT  `fileId`
-                  FROM  `".$this->pluginPrefix."tasks_files` n
-                  WHERE  `taskId` = " . $params["filter"];
-
-        $responce = $this->getDataGrid($query);
-        
-        foreach ( $responce["data"] as $k => $v ){
-                $DataArray[] = $responce["data"][$k]->fileId;
-        }
-
-        $params["parentRelationShip"] = "tasks";
-        $params["parent"] = $params["filter"];
-        $params["filter"] = implode(",", $DataArray);
-
-        $data = $this->getList($params);
-        return $data;
-    }
-    
-    public function getActionRequestsFiles($params = array()){
-        $DataArray= array();
-        $query = "SELECT  `fileId`
-                  FROM  `".$this->pluginPrefix."actionRequests_files` n
-                  WHERE  `actionRequestId` = " . $params["filter"];
-
-        $responce = $this->getDataGrid($query);
-        
-        foreach ( $responce["data"] as $k => $v ){
-                $DataArray[] = $responce["data"][$k]->fileId;
-        }
-
-        $params["parentRelationShip"] = "tasks";
-        $params["parent"] = $params["filter"];
-        $params["filter"] = implode(",", $DataArray);
-
-        $data = $this->getList($params);
-        return $data;
-    }
-    
     public function add(){
         $rtnData = new stdClass();
         $rtnData->error = '';
@@ -107,26 +67,41 @@ class files extends DBManagerModel{
             $entityObj = $this->entity();
             $relEntity = $entityObj["relationship"][$_POST["parentRelationShip"]];
             $target_path = $this->pluginPath."/uploadedFiles/";
-            $_POST["fileName"] = $_FILES['file']['name'];
-            $nameParts = explode(".", $_FILES['file']['name']);
-            $_POST["ext"] = end($nameParts);
-            $nameArray = array_pop($nameParts);
-            $fileName = implode("_",$nameParts);
-            $fileName = str_replace(array("'",".",",","*","@","?","!"), "_",$fileName);
-            $_POST["name"] = (empty($_POST["name"]))? $fileName : $_POST["name"];
-            $_POST["mime"] =  $_FILES["file"]["type"];
-            $_POST["size"] =  $_FILES["file"]["size"];
             
-            $this->addRecord($entityObj, $_POST, array("created" => date("Y-m-d H:i:s"), "created_by" => $this->currentUser->ID));
-            $id = $this->LastId;
-            $this->addRecord($relEntity, array($relEntity["parent"]["Id"] => $_POST["parentId"],"fileId" => $this->LastId), array());
-            $file = $target_path.$fileName.".".$_POST["ext"];
-            if(move_uploaded_file($_FILES['file']['tmp_name'], $file)) {
-                $this->uploadFile($id, $file);
-                $rtnData->msg = 'success';
-            } else{
-                $rtnData->msg = 'fail'; 
-                $rtnData->error = "There was an error uploading the file, please try again!";
+            foreach($_FILES as $key => $value){
+                $_POST["fileName"] = $value['name'];
+                $nameParts = explode(".", $value['name']);
+                $_POST["ext"] = end($nameParts);
+                $nameArray = array_pop($nameParts);
+                $fileName = implode("_",$nameParts);
+                $fileName = str_replace(array("'",".",",","*","@","?","!"), "_",$fileName);
+                $_POST["name"] = (empty($_POST["name"]))? $fileName : $_POST["name"];
+                $_POST["mime"] =  $value["type"];
+                $_POST["size"] =  $value["size"];
+
+                if(array_key_exists('settings', $relEntity) && array_key_exists('deleteAllAfterInsert', $relEntity["settings"]) && $relEntity["settings"]["deleteAllAfterInsert"]){
+                    $query = "SELECT  `fileId`
+                              FROM  `".$relEntity["tableName"]."` n
+                              WHERE  `".$relEntity["parent"]["Id"]."` = " . $_POST["parentId"];
+
+                    $responce = $this->getDataGrid($query);
+                    foreach ( $responce["data"] as $k => $v ){
+                        $this->eliminate($responce["data"][$k]->fileId);
+                    }
+                }
+                
+                $this->addRecord($entityObj, $_POST, array("created" => date("Y-m-d H:i:s"), "created_by" => $this->currentUser->ID));
+                $id = $this->LastId;
+                $this->addRecord($relEntity, array($relEntity["parent"]["Id"] => $_POST["parentId"],"fileId" => $this->LastId), array());
+                $file = $target_path.$fileName.".".$_POST["ext"];
+                
+                if(move_uploaded_file($value['tmp_name'], $file)) {
+                    $this->uploadFile($id, $file);
+                    $rtnData->msg = 'success';
+                } else{
+                    $rtnData->msg = 'fail'; 
+                    $rtnData->error = "There was an error uploading the file, please try again!";
+                }
             }
         }
         catch (Exception $e){
@@ -136,13 +111,16 @@ class files extends DBManagerModel{
         echo json_encode($rtnData);
     }
     
-    public function edit(){
-        
-        
+    public function edit(){}
+    
+    public function eliminate($id) {
+        $this->eliminateRecord($this->entity(), array("fileId" => $id)/*, array("columnValidateEdit" => "created_by")*/);
     }
+    
     public function del(){
-        $this->delRecord($this->entity(), array("fileId" => $_POST["id"]), array("columnValidateEdit" => "created_by"));
+        $this->delRecord($this->entity(), array("fileId" => $_POST["id"])/*, array("columnValidateEdit" => "created_by")*/);
     }
+    
     public function detail(){}
     public function entity($CRUD = array())
     {
@@ -179,22 +157,33 @@ class files extends DBManagerModel{
                                         ,"fileId" => array("type" => "int", "PK" => 0)
                                     )
                                 )
-                        ,"tasks" => array(
-                                        "tableName" => $this->pluginPrefix."tasks_files"
-                                        ,"parent" => array("tableName" => $this->pluginPrefix."tasks", "Id" => "taskId")
-                                        ,"atributes" => array(
-                                            "taskId" => array("type" => "int", "PK" => 0)
-                                            ,"fileId" => array("type" => "int", "PK" => 0)
-                                        )
+                        ,"fileInfoLaboral" => array(
+                                    "tableName" => $this->pluginPrefix."filesInfoLaboral"
+                                    ,"parent" => array("tableName" => $this->pluginPrefix."infoLaboral", "Id" => "infoLaboralId")
+                                    ,"settings" => array("deleteAllAfterInsert" => true)
+                                    ,"atributes" => array(
+                                        "infoLaboralId" => array("type" => "int", "PK" => 0)
+                                        ,"fileId" => array("type" => "int", "PK" => 0)
                                     )
-                        ,"actionRequest" => array(
-                                        "tableName" => $this->pluginPrefix."actionRequests_files"
-                                        ,"parent" => array("tableName" => $this->pluginPrefix."actionRequests", "Id" => "actionRequestId")
-                                        ,"atributes" => array(
-                                            "actionRequestId" => array("type" => "int", "PK" => 0)
-                                            ,"fileId" => array("type" => "int", "PK" => 0)
-                                        )
+                                )
+                        ,"fileInfoAcademica" => array(
+                                    "tableName" => $this->pluginPrefix."filesInfoAcademica"
+                                    ,"parent" => array("tableName" => $this->pluginPrefix."infoAcademica", "Id" => "infoAcademicaId")
+                                    ,"settings" => array("deleteAllAfterInsert" => true)
+                                    ,"atributes" => array(
+                                        "infoAcademicaId" => array("type" => "int", "PK" => 0)
+                                        ,"fileId" => array("type" => "int", "PK" => 0)
                                     )
+                                )
+                        ,"filesInfoIdiomas" => array(
+                                    "tableName" => $this->pluginPrefix."filesInfoIdiomas"
+                                    ,"parent" => array("tableName" => $this->pluginPrefix."infoIdiomas", "Id" => "infoIdiomaId")
+                                    ,"settings" => array("deleteAllAfterInsert" => true)
+                                    ,"atributes" => array(
+                                        "infoIdiomaId" => array("type" => "int", "PK" => 0)
+                                        ,"fileId" => array("type" => "int", "PK" => 0)
+                                    )
+                                )
                     )
                 );
             return $data;

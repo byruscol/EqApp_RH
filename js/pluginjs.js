@@ -32,3 +32,46 @@ function imageExist(url)
    img.src = url;
    return (img.height != 0)? true : false;
 }
+
+function ajaxFileUpload(id, url, elementId, oper, parentRelationShip, gridId) 
+{
+    if(jQuery('#'+elementId).val() != ""){
+        jQuery("#loading")
+        .ajaxStart(function () {
+            jQuery(this).show();
+        })
+        .ajaxComplete(function () {
+            jQuery(this).hide();
+        });
+
+        jQuery.ajaxFileUpload
+        (
+            {
+                url: url,
+                secureuri: false,
+                fileElementId: elementId,
+                dataType: 'json',
+                data: { parentId: id, oper: oper, parentRelationShip: parentRelationShip },
+                success: function (data, status) {
+
+                    if (typeof (data.msg) != 'undefined') {
+                        if (data.msg == "success") {
+                            return;
+                        } else {
+                            alert(data.error);
+                        }
+                    }
+                    else {
+                        return alert('Failed to upload file!');
+                    }
+                },
+                complete: function(response){
+                    jQuery('#'+gridId).jqGrid().trigger('reloadGrid');
+                },
+                error: function (data, status, e) {
+                    return alert('Failed to upload file!');
+                }
+            }
+        ) 
+    }
+ }  

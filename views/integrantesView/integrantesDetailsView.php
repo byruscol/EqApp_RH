@@ -35,7 +35,9 @@ $template = $pluginPath . "/views/familiaresView/familiaresDetail.php";
                 </div>
                 <div class="span12">
                     <table id="familia"  class="table table-bordered table-condensed">
-                        <?php for($i = 0; $i < $familiares["totalRows"]; $i++){
+                        <?php 
+                        $totalRows = count($familiares["data"]);
+                        for($i = 0; $i < $totalRows; $i++){
                             $_GET["page"] = "familiares";
                             $_GET["task"] = "Details";
                             $_GET["rowid"] = $familiares["data"][$i]->familiarId; 

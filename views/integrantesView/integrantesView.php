@@ -16,9 +16,9 @@
     <div id="tabs" class="span11">
         <ul id="nonConformityTab" class="nav nav-tabs">
         <li class="active"><a href="#familiaresTab" data-toggle="tab"><?php echo $resource->getWord("familia"); ?></a></li>     
-        <li><a href="#laboralTab" data-toggle="tab"><?php echo $resource->getWord("laboral"); ?></a></li>  
-        <li><a href="#academicaTab" data-toggle="tab"><?php echo $resource->getWord("academica"); ?></a></li>
-        <li><a href="#idiomasTab" data-toggle="tab"><?php echo $resource->getWord("idiomas"); ?></a></li>
+        <li><a href="#infoLaboralTab" data-toggle="tab"><?php echo $resource->getWord("laboral"); ?></a></li>  
+        <li><a href="#infoAcademicaTab" data-toggle="tab"><?php echo $resource->getWord("academica"); ?></a></li>
+        <li><a href="#infoIdiomasTab" data-toggle="tab"><?php echo $resource->getWord("idiomas"); ?></a></li>
         </ul>
         <div id="TabContent" class="tab-content">
             <div class="tab-pane fade active" id="familiaresTab">
@@ -28,30 +28,30 @@
                     <div id="familiaresPager"></div>
                 </div>
             </div>
-            <div class="tab-pane fade active" id="laboralTab">
+            <div class="tab-pane fade active" id="infoLaboralTab">
                 <div class="spacer10"></div>
                 <div class="jqGrid">
                     <div class="ui-jqgrid ui-widget ui-corner-all clear-margin span12" dir="ltr" style="">
-                        <table id="laboral"></table>
-                        <div id="laboralPager"></div>
+                        <table id="infoLaboral"></table>
+                        <div id="infoLaboralPager"></div>
                     </div>
                 </div>
             </div>
-            <div class="tab-pane fade active" id="academicaTab">
+            <div class="tab-pane fade active" id="infoAcademicaTab">
                 <div class="spacer10"></div>
                 <div class="jqGrid">
                     <div class="ui-jqgrid ui-widget ui-corner-all clear-margin span12" dir="ltr" style="">
-                        <table id="academica"></table>
-                        <div id="academicaPager"></div>
+                        <table id="infoAcademica"></table>
+                        <div id="infoAcademicaPager"></div>
                     </div>
                 </div>
             </div>
-            <div class="tab-pane fade active" id="idiomasTab">
+            <div class="tab-pane fade active" id="infoIdiomasTab">
                 <div class="spacer10"></div>
                 <div class="jqGrid">
                     <div class="ui-jqgrid ui-widget ui-corner-all clear-margin span12" dir="ltr" style="">
-                        <table id="idiomas"></table>
-                        <div id="idiomasPager"></div>
+                        <table id="infoIdiomas"></table>
+                        <div id="infoIdiomasPager"></div>
                     </div>
                 </div>
             </div>

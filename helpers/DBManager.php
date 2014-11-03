@@ -52,7 +52,7 @@ abstract class DBManager{
 
             if($start != null && $limit != null)
                     $queryBuild .= " LIMIT " . $start . " , " . $limit;
-
+//echo $queryBuild;
             return $this->get($queryBuild, $this->queryType);
     }
 
@@ -102,6 +102,7 @@ abstract class DBManager{
     protected function execute() {
 
         try {
+               //    echo $this->query;
                 switch($this->queryType)
                 {
                     case "add": $this->result = $this->conn->insert( $this->DBOper["table"], $this->DBOper["data"]); $this->LastId = $this->conn->insert_id;break;
@@ -219,6 +220,52 @@ abstract class DBManager{
         return array("currentRecord" => $currentRecord, "where" => $where);
     }
 
+    protected function eliminateRecord($entity, $filters, $validate = null){
+        $edit = true;
+        $PK = array();
+        $currentRecord = $this->getCurrentRecord($entity, $filters);
+
+        if(is_array( $validate ) && array_key_exists("columnValidateEdit", $validate))
+        {
+            if($currentRecord["currentRecord"]["data"]->$validate["columnValidateEdit"] == $this->currentUser->ID){
+                $edit = true;
+            }
+            else{
+                $edit = false;
+            }
+        }
+
+        if($edit){
+            foreach($entity["atributes"] as $key => $value){
+
+                if(array_key_exists("PK", $value))
+                    $PK[] = $filters[$key];
+            }
+            $pkId = implode(",", $PK);
+
+            foreach($currentRecord["currentRecord"]["data"] as $key => $value){
+                $this->queryType = "add";
+                $this->DBOper["table"] = $this->pluginPrefix."audit";
+                $this->DBOper["data"] = array( 
+                                            "table" => $entity["tableName"]
+                                            ,"column" => $key
+                                            ,"data" => stripslashes($value)
+                                            ,"action" => "eliminate "
+                                            ,"date" => date("Y-m-d H:i:s",time())
+                                            ,"user" => $this->currentUser->user_login
+                                            ,"PK" => $pkId
+                                         );
+                $this->execute();
+            }
+
+            $this->queryType = "del";
+            $this->DBOper = array();
+            $this->DBOper["table"] = $entity["tableName"];
+            $this->DBOper["filter"] = $filters;
+            $this->execute();
+        }
+    } 
+    
     protected function delRecord($entity, $filters, $validate = null){
         $edit = true;
         $PK = array();

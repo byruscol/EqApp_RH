@@ -55,11 +55,13 @@ class familiares extends DBManagerModel{
     public function add(){
         $_POST["integranteId"] = $_POST["parentId"];
         $this->addRecord($this->entity(), $_POST, array("date_entered" => date("Y-m-d H:i:s"), "created_by" => $this->currentUser->ID));
+        echo json_encode(array("parentId" => $this->LastId));
     }
     
     public function edit(){
         $entityObj = $this->entity();
         $this->updateRecord($entityObj, $_POST, array("familiarId" => $_POST["familiarId"]));
+        echo json_encode(array("parentId" => $_POST["familiarId"]));
     }
     
     public function del(){
@@ -70,7 +72,7 @@ class familiares extends DBManagerModel{
         $entity = $this->entity();
         $query = "SELECT familiarId, nombre, apellido, genero, fechaNacimiento"
                         . ", DATE_FORMAT(FROM_DAYS(DATEDIFF(NOW(), fechaNacimiento)), '%Y')+0 edad, tipo"
-                        . ", estadoCivil, ocupacion, eps epsId "
+                        . ", estadoCivil, ocupacion, eps epsId, '' foto "
                     . " FROM ".$entity["tableName"]." n
                     LEFT JOIN ".$this->pluginPrefix."epss s ON s.epsId = n.epsId
                     WHERE n.`familiarId` = " . $params["filter"];
@@ -97,6 +99,7 @@ class familiares extends DBManagerModel{
                             ,"epsId" => array("type" => "tinyint", "required" => true, "references" => array("table" => $this->pluginPrefix."epss", "id" => "epsId", "text" => "eps"))
                             ,"parentId" => array("type" => "int","required" => false, "hidden" => true, "isTableCol" => false)
                             ,"integranteId" => array("type" => "int", "update" => false,"required" => false, "hidden" => true)
+                            ,"foto" => array("type" => "file", "validateAttr" => array("size" => 50, "units" => "MB", "factor" => 1024), "required" => false,"hidden" => true, "edithidden" => true, "isTableCol" => false)
                         )
                     );
             return $data;
