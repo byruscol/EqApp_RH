@@ -25,8 +25,7 @@
             <div class="tab-pane fade active" id="integrantesDetailTab">
                 <div class="spacer10"></div>
                 <div class="ui-jqgrid ui-widget ui-corner-all clear-margin span12" dir="ltr" style="">
-                    <table id="integrantesDetail"></table>
-                    <div id="integrantesDetailPager"></div>
+                    <div id="integrantesDetail"></div>
                 </div>
             </div>
             <div class="tab-pane fade active" id="familiaresTab">

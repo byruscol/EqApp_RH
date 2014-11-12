@@ -2,8 +2,8 @@
 /*error_reporting(E_ALL);
 ini_set('display_errors', '1');*/
 require_once dirname(__FILE__)."/../pluginConfig.php";
-require_once $pluginPath."/helpers/Grid.php";
-require_once "class.buildView.php";
+require_once $pluginPath."/helpers/Form.php";
+require_once "class.buildViewForm.php";
 header('Content-type: text/javascript');
 $postData = array();
 if((isset($_GET["view"]) && !empty($_GET["view"])) && 

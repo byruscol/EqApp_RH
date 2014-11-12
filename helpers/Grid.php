@@ -70,6 +70,91 @@ class Grid extends DBManager
         $data = implode(";", $DataArray);
         return $data;
     }
+    
+    function typeDataStructure($colType,$type,$params){
+        switch($type){
+            case "Grid":
+                switch($colType){
+                    case 'date':
+                            $params["model"] = array_merge($params["model"]
+                                                ,array(
+                                                    'sorttype' => "date",
+                                                    'formatter' => "date",
+                                                    'formatoptions' => array('newformat' => 'Y-m-d', 'srcformat' => 'Y-m-d'),
+                                                    'editoptions' => array('dataInit'=>"@initDateEdit@")
+                                                    )
+                                                );
+                            break;
+                    case 'datetime':
+                                    $params["model"] = array_merge($params["model"]
+                                                        ,array(
+                                                            'sorttype' => "date",
+                                                            'formatter' => "date",
+                                                            'formatoptions' => array('newformat' => 'Y-m-d H:i:s', 'srcformat' => 'Y-m-d H:i:s'),
+                                                            'editoptions' => array('dataInit'=>"@initDateEdit@")
+                                                            )
+                                                        );
+                                    break;
+                    case 'mail':
+                                $params["model"] = array_merge($params["model"]
+                                                     ,array('editrules' => array('email' => true))
+                                        );
+                                break;
+                    case 'enum':
+                            $enums = array("table" => $this->entity["tableName"], "id" => $params["col"]);
+                            $QueryData = $this->EnumData($enums);
+                            $params["model"] = array_merge($params["model"]
+                                            ,array(
+                                                'edittype' => 'select',
+                                                'formatter' => 'select',
+                                                'stype' => 'select',
+                                                'editoptions' => array( "value" => "@'".$QueryData."'@"),
+                                                'searchoptions' => array('value' => "@'".$QueryData."'@")
+                                            )
+                                        );
+                            break;
+                    case "Referenced":
+                            $QueryData = $this->RelationShipData($params["value"]["references"]);
+
+                            $params["model"] = array_merge($params["model"]
+                                            ,array(
+                                                'edittype' => 'select',
+                                                'formatter' => 'select',
+                                                'stype' => 'select',
+                                                'editoptions' => array( "value" => "@'".$QueryData."'@"),
+                                                'searchoptions' => array('value' => "@'".$QueryData."'@")
+                                            )
+                                        );
+                            if(array_key_exists('dataEvents', $params["value"])){
+                                $params["model"]['editoptions']['dataEvents'] = $params["value"]['dataEvents'];
+                            }
+                            break;
+                    case 'file':
+                                $this->validateFileSize = true;
+                                $this->fileId[] = $col;
+                                $this->validateCode[] = "jQuery(document).on('change', '#".$params["col"]."', function() {
+                                                            if((jQuery('#".$params["col"]."')[0].files[0].size/".$params["value"]['validateAttr']["factor"].") > ".$params["value"]['validateAttr']["size"]."){
+                                                                jQuery('#".$params["col"]."').replaceWith(jQuery('#".$params["col"]."').clone(true));
+                                                                jQuery('#".$params["col"]."').val('');
+                                                                alert('".sprintf($this->loc->getWord("fileSize"), $params["value"]['validateAttr']["size"], $params["value"]['validateAttr']["units"])."');
+                                                            }
+                                                          });";
+
+                                $params["model"] = array_merge($params["model"]
+                                            ,array(
+                                                'edittype' => 'file',
+                                                'formatter' => "FilesLinks",
+                                                'search' => false,
+                                                'editoptions' => array( "enctype" => "multipart/form-data" )
+                                            )
+                                        );
+                            break;
+                } break;
+        }
+        
+        return $params["model"];
+    }
+    
     function colModelFromTable(){
     	$countCols = count($this->entity["atributes"]);
     	$j=1;
@@ -126,83 +211,7 @@ class Grid extends DBManager
     		else
     			$colType = $value["type"];
     		
-    		switch($colType){
-    			case 'date':
-    				$model = array_merge($model
-                                                    ,array(
-                                                        'sorttype' => "date",
-				    			'formatter' => "date",
-				    			'formatoptions' => array('newformat' => 'Y-m-d', 'srcformat' => 'Y-m-d'),
-				    			'editoptions' => array('dataInit'=>"@initDateEdit@")
-                                                        )
-                                                    );
-    				break;
-    			case 'datetime':
-    					$model = array_merge($model
-                                                            ,array(
-                                                                'sorttype' => "date",
-                                                                'formatter' => "date",
-                                                                'formatoptions' => array('newformat' => 'Y-m-d H:i:s', 'srcformat' => 'Y-m-d H:i:s'),
-                                                                'editoptions' => array('dataInit'=>"@initDateEdit@")
-                                                                )
-                                                            );
-    					break;
-                        case 'mail':
-                                    $model = array_merge($model
-                                                         ,array('editrules' => array('email' => true))
-                                            );
-                                    break;
-                                    
-                        case 'enum':
-                                $enums = array("table" => $this->entity["tableName"], "id" => $col);
-                                $QueryData = $this->EnumData($enums);
-    				$model = array_merge($model
-    						,array(
-                                                    'edittype' => 'select',
-                                                    'formatter' => 'select',
-                                                    'stype' => 'select',
-                                                    'editoptions' => array( "value" => "@'".$QueryData."'@"),
-                                                    'searchoptions' => array('value' => "@'".$QueryData."'@")
-    						)
-                                            );
-    				break;
-    			case "Referenced":
-    				$QueryData = $this->RelationShipData($value["references"]);
-    					
-    				$model = array_merge($model
-    						,array(
-                                                    'edittype' => 'select',
-                                                    'formatter' => 'select',
-                                                    'stype' => 'select',
-                                                    'editoptions' => array( "value" => "@'".$QueryData."'@"),
-                                                    'searchoptions' => array('value' => "@'".$QueryData."'@")
-    						)
-                                            );
-                                if(array_key_exists('dataEvents', $value)){
-                                    $model['editoptions']['dataEvents'] = $value['dataEvents'];
-                                }
-    				break;
-    			case 'file':
-                                    $this->validateFileSize = true;
-                                    $this->fileId[] = $col;
-                                    $this->validateCode[] = "jQuery(document).on('change', '#".$col."', function() {
-                                                                if((jQuery('#".$col."')[0].files[0].size/".$value['validateAttr']["factor"].") > ".$value['validateAttr']["size"]."){
-                                                                    jQuery('#".$col."').replaceWith(jQuery('#".$col."').clone(true));
-                                                                    jQuery('#".$col."').val('');
-                                                                    alert('".sprintf($this->loc->getWord("fileSize"), $value['validateAttr']["size"], $value['validateAttr']["units"])."');
-                                                                }
-                                                              });";
-                                    
-                                    $model = array_merge($model
-    						,array(
-                                                    'edittype' => 'file',
-                                                    'formatter' => "FilesLinks",
-                                                    'search' => false,
-                                                    'editoptions' => array( "enctype" => "multipart/form-data" )
-    						)
-                                            );
-    				break;
-    		}
+                $model = $this->typeDataStructure($colType,"Grid",array("model" => $model, "col" => $col, "value" => $value));
                 
                 switch($col){
                     case "parentId": $model["editoptions"]["defaultValue"] = "@function(g){return this.p.postData.filter}@"; break;
