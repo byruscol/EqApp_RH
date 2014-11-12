@@ -62,7 +62,7 @@ class Grid extends DBManager
         $DataArray = array();               
         $query = "SHOW COLUMNS FROM ".$enums["table"]." WHERE Field = '" . $enums["id"] . "'  " ;
         $Relation = $this->getDataGrid($query, null, null, null, null);
-        $e = str_replace(array("'","(",")","enum"),"", $Relation["data"][0]->Type);
+        $e = str_replace(array("'","(",")","enum","ENUM"),"", $Relation["data"][0]->Type);
         $enumList = explode(",",$e);
         foreach ( $enumList as $k){
                     $DataArray[] = $k.":".$k;

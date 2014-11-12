@@ -15,12 +15,20 @@
     <div class="span12"></div>
     <div id="tabs" class="span11">
         <ul id="nonConformityTab" class="nav nav-tabs">
-        <li class="active"><a href="#familiaresTab" data-toggle="tab"><?php echo $resource->getWord("familia"); ?></a></li>     
+        <li class="active"><a href="#integrantesDetailTab" data-toggle="tab"><?php echo $resource->getWord("integrantesDetail"); ?></a></li>     
+        <li><a href="#familiaresTab" data-toggle="tab"><?php echo $resource->getWord("familia"); ?></a></li>     
         <li><a href="#infoLaboralTab" data-toggle="tab"><?php echo $resource->getWord("laboral"); ?></a></li>  
         <li><a href="#infoAcademicaTab" data-toggle="tab"><?php echo $resource->getWord("academica"); ?></a></li>
         <li><a href="#infoIdiomasTab" data-toggle="tab"><?php echo $resource->getWord("idiomas"); ?></a></li>
         </ul>
         <div id="TabContent" class="tab-content">
+            <div class="tab-pane fade active" id="integrantesDetailTab">
+                <div class="spacer10"></div>
+                <div class="ui-jqgrid ui-widget ui-corner-all clear-margin span12" dir="ltr" style="">
+                    <table id="integrantesDetail"></table>
+                    <div id="integrantesDetailPager"></div>
+                </div>
+            </div>
             <div class="tab-pane fade active" id="familiaresTab">
                 <div class="spacer10"></div>
                 <div class="ui-jqgrid ui-widget ui-corner-all clear-margin span12" dir="ltr" style="">
