@@ -10,28 +10,34 @@ class Grid extends DBManager
     private $ColMolde;
     private $colnames = array();
     private $baseId;
-    private $entity;
     private $params;
     private $loc;
     private $beforeShowForm = "";
+    private $type;
+    protected $model;
+    protected $entity;
     public $ValidateEdit = false;
     public $view;
     public $validateFileSize = false;
     public $validateCode = array();
     public $fileId = array();
 
-    function __construct($type = "table", $p, $v, $t) {
+    function __construct($type = "table", $p, $v, $t, $y = "Grid") {
             global $resource;
             $this->view = $v;
             $this->params = $p;
             $this->loc = $resource;
+            $this->type = $y;
             parent::__construct();
             if($type == "table"){
-                    require_once $this->pluginPath."/models/".$v."Model.php";
-                    $this->baseId = $t;
-                    $this->table = $this->pluginPrefix.$t;
-                    $this->entity = $v::entity($p["CRUD"]);
-                    $this->gridBuilderFromTable();
+                require_once $this->pluginPath."/models/".$v."Model.php";
+                $this->model = new $v();
+                $this->baseId = $t;
+                $this->table = $this->pluginPrefix.$t;
+                $this->entity = $this->model->entity($p["CRUD"]);
+                switch ($this->type){
+                    case "Grid": $this->gridBuilderFromTable();break;
+                }
             }
     }
 
@@ -71,8 +77,8 @@ class Grid extends DBManager
         return $data;
     }
     
-    function typeDataStructure($colType,$type,$params){
-        switch($type){
+    function typeDataStructure($colType,$params){
+        switch($this->type){
             case "Grid":
                 switch($colType){
                     case 'date':
@@ -150,6 +156,94 @@ class Grid extends DBManager
                                         );
                             break;
                 } break;
+            case 'Form': 
+                switch($colType){
+                       case 'date':
+                                $params["model"] = '<div class="'.$params["hidden"].'">'
+                                                        . '<div class="form-group">'
+                                                                . '<label class="col-sm-2 control-label">'.$this->loc->getWord(strtoupper($params["col"]),false).'</label>'
+                                                                . '<div class="col-sm-2">'
+                                                                        . '<div class="input-append date" id="'.$params["col"].'"  data-date="1975-01-01" data-date-format="yyyy-mm-dd" data-date-viewmode="years">'
+                                                                            . '<input '.$params["style"].' name="'.$params["col"].'" type="date" value="'.$params["dataForm"]['data'][0]->$params["col"].'" readonly '.$params["required"].'>'
+                                                                            . '<span class="add-on"><i class="glyphicon glyphicon-calendar"></i></span>'
+                                                                        . '</div>'
+                                                                    . '</div>'
+                                                        . '</div>'
+                                                    . '</div>'
+                                                    . '<script>'
+                                                            . 'jQuery(function(){'
+                                                                    . 'jQuery("#'.$params["col"].'").datepicker();'
+                                                            . '});'
+                                                    . '</script>';
+                        break;
+                        case 'varchar':
+                                $params["model"] = '<div class="'.$params["hidden"].'">'
+                                                        . '<div class="form-group">'
+                                                            . '<label  class="col-sm-2 control-label">'.$this->loc->getWord(strtoupper($params["col"]),false).'</label>'
+                                                            .'<div class="col-sm-2">'
+                                                                . '<input type="text" '.$params["style"].' id="'.$params["col"].'" name="'.$params["col"].'" placeholder="'.$this->loc->getWord(strtoupper($params["col"]),false).'" value="'.$params["dataForm"]['data'][0]->$params["col"].'"  '.$params["required"].'>'
+                                                            . '</div>'
+                                                        . '</div>'
+                                                    . '</div>';
+                            break;
+                        case 'email':
+                                $params["model"] = '<div class="'.$params["hidden"].'">'
+                                                        . '<div class="form-group">'
+                                                            . '<label  class="col-sm-2 control-label">'.$this->loc->getWord(strtoupper($params["col"]),false).'</label>'
+                                                            . '<div class="col-sm-2">'
+                                                                    . '<input type="email" '.$params["style"].' id="'.$params["col"].'" name="'.$params["col"].'" placeholder="'.$this->loc->getWord(strtoupper($params["col"]),false).'" value="'.$params["dataForm"]['data'][0]->$params["col"].'" data-error="Bruh, that email address is invalid"  '.$params["required"].'>'
+                                                            . '</div>'
+                                                        . '</div>'
+                                                    . '</div>';
+                        break;			
+                        case 'int':
+                                $params["model"] = '<div class="'.$params["hidden"].'">'
+                                                        . '<div class="form-group">'
+                                                            . '<label  class="col-sm-2 control-label">'.$this->loc->getWord(strtoupper($params["col"]),false).'</label>'
+                                                            . '<div class="col-sm-2">'
+                                                                . '<input type="number" '.$params["style"].' id="'.$params["col"].'" name="'.$params["col"].'" placeholder="'.$this->loc->getWord(strtoupper($params["col"]),false).'" value="'.$params["dataForm"]['data'][0]->$params["col"].'" '.$params["required"].'>'
+                                                            . '</div>'
+                                                        . '</div>'
+                                                    . '</div>';
+                        break;
+                        case 'Enum':
+                                $QueryData = $this->EnumData($params["value"]["enum"]);
+                                $params["model"] = '<div class="'.$params["hidden"].'">'
+                                                        . '<div class="form-group">'
+                                                            . '<label  class="col-sm-2 control-label">'.$this->loc->getWord(strtoupper($params["col"]),false).'</label>'
+                                                            . '<div class="col-sm-2">'
+                                                                . '<select style="height:30px; max-width: 100%;" class="form-control" id="'.$params["col"].'" name="'.$params["col"].'" placeholder="'.$this->loc->getWord(strtoupper($params["col"]),false).'" required>'
+                                                                    .$QueryData
+                                                                . '</select> '
+                                                            . '</div>'
+                                                        . '</div>'
+                                                        .'<script>'
+                                                            . 'jQuery(function(){'
+                                                                . 'jQuery("#'.$params["col"].'").val("'.$params["dataForm"]['data'][0]->$params["col"].'");'
+                                                            . '});'
+                                                        . '</script>'
+                                                    . '</div>';
+                        break;
+                        case 'Referenced':
+                                $QueryData = $this->RelationShipData($params["value"]["references"]);
+                                $params["model"] = '<div class="'.$params["hidden"].'">'
+                                                        . '<div class="form-group">'
+                                                            . '<label  class="col-sm-2 control-label">'.$this->loc->getWord(strtoupper($params["col"]),false).'</label>'
+                                                            . '<div class="col-sm-2">'
+                                                                . '<select style="height:30px; max-width: 100%;" class="form-control" id="'.$params["col"].'" name="'.$params["col"].'" placeholder="'.$this->loc->getWord(strtoupper($params["col"]),false).'" required>'
+                                                                        .$QueryData
+                                                                . '</select>'
+                                                            . '</div>'
+                                                            . '</div>'
+                                                            . '<script>'
+                                                                    . 'jQuery(function(){'
+                                                                            . 'jQuery("#'.$params["col"].'").val("'.$params["dataForm"]['data'][0]->$params["col"].'");'
+                                                                    . '});'
+                                                            . '</script>'
+                                                    .'</div>';
+                        break;
+                    }
+                break;
         }
         
         return $params["model"];
@@ -211,7 +305,7 @@ class Grid extends DBManager
     		else
     			$colType = $value["type"];
     		
-                $model = $this->typeDataStructure($colType,"Grid",array("model" => $model, "col" => $col, "value" => $value));
+                $model = $this->typeDataStructure($colType,array("model" => $model, "col" => $col, "value" => $value));
                 
                 switch($col){
                     case "parentId": $model["editoptions"]["defaultValue"] = "@function(g){return this.p.postData.filter}@"; break;
@@ -466,7 +560,7 @@ class Grid extends DBManager
                                                          caption:"Export to Excel",
                                                          id:"csv_' . $this->view . '",
                                                          onClickButton : function () {
-                                                             $("#' . $this->view . '").jqGrid("exportarExcelCliente",{nombre:"HOJATEST",formato:"excel"});
+                                                             jQuery("#' . $this->view . '").jqGrid("exportarExcelCliente",{nombre:"HOJATEST",formato:"excel"});
                                                          }
                                                       })
                                                     '; 
