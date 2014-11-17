@@ -63,6 +63,7 @@ $locale = array(
                 ,"files" => "Archivos"
                 ,"fileSelect" => "Seleccione archivo"
                 ,"fileSize" => "El tamaño del archivo no debe ser mayor que %u%s"
+                ,"fondoCesantiasId" => "Fondo cesantías"
                 ,"generalidadnc" => "Generalidad"
                 ,"genero" => "Genero"
                 ,"gestion" => "Gestión"

@@ -25,7 +25,38 @@ class Form extends Grid
         }
 	
 	function ColModelFromTableForm(){
-		$this->data = $this->model->getList();
+            $this->data = $this->model->getList();
+            $form = '<form id="form" class="form-horizontal" data-toggle="validator" role="form">';
+            $colSize = round(12/$this->entity["formConfig"]["cols"],0);
+            $i = 0;
+            foreach ($this->entity["atributes"] as $col => $value){
+                if(array_key_exists('references', $value))
+                    $colType = "Referenced";
+                elseif(array_key_exists('enum', $value))
+                    $colType = "enum";
+                else
+                    $colType = $value["type"];
+                
+                $hidden = (isset($value['hidden']) && $value['hidden'] == true)? 'hidden': 'show';
+                
+                if($i==0)
+                    $formColmodel .= '<div class="row-fluid">';
+                else{				
+                    if($i%($colSize -1) == 0)
+                        $formColmodel .= '</div><div class="row-fluid">';
+                }
+                if($hidden == 'show')
+                    $i++;
+                
+                
+                if($hidden == 'show')
+                    $formColmodel .= '<div class="col-xs-'.$colSize.' col-md-'.$colSize.'">';
+                $formColmodel .= $this->typeDataStructure($colType,array("model" => $model, "style" => $style,"col" => $col, "value" => $value, "dataForm" => $this->data, "required" => $required, "hidden" => $hidden));
+                if($hidden == 'show')
+                    $formColmodel .= '</div>';
+            }
+            $form .= '</form>';
+		/*$this->data = $this->model->getList();
 		$PrimaryKey = 0;
 		
 		$countCols = count($this->entity["atributes"]);
@@ -61,7 +92,7 @@ class Form extends Grid
                     if(array_key_exists('references', $value))
                         $colType = "Referenced";
                     elseif(array_key_exists('enum', $value))
-                        $colType = "Enum";
+                        $colType = "enum";
                     else
                         $colType = $value["type"];
 
@@ -71,9 +102,9 @@ class Form extends Grid
 
                     $formColmodel .= $this->typeDataStructure($colType,array("model" => $model, "style" => $style,"col" => $col, "value" => $value, "dataForm" => $this->data, "required" => $required, "hidden" => $hidden));
 		}
-		
+		$formColmodel .='';
 		$formColmodel .='<div class="col-md-7"><br><div id="dialog-message" title="Datos cargados"></div><button href="#" type="submit" class="btn btn-primary" id="save">Submit</button></div></form>';
-				
+		*/		
 		/*$formColmodel .='<script>
 					$(document).ready(function() {
 						$("#form").validator("validate");

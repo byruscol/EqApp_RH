@@ -60,7 +60,11 @@ class Grid extends DBManager
                     $DataArray[] = $Relation["data"][$k]->Id.":".htmlspecialchars($Relation["data"][$k]->Name);
             }
             
-            $data = implode(";", $DataArray);
+            if($this->type == "Form")
+                $data = $DataArray;
+            else
+                $data = implode(";", $DataArray);
+            
             return $data;
     }
     function EnumData($enums){
@@ -73,7 +77,12 @@ class Grid extends DBManager
         foreach ( $enumList as $k){
                     $DataArray[] = $k.":".$k;
             }
-        $data = implode(";", $DataArray);
+            
+        if($this->type == "Form")
+            $data = $DataArray;
+        else
+            $data = implode(";", $DataArray);
+        
         return $data;
     }
     
@@ -157,17 +166,17 @@ class Grid extends DBManager
                             break;
                 } break;
             case 'Form': 
+                $colType = ($params["hidden"] == 'hidden')?"hidden":$colType;
                 switch($colType){
-                       case 'date':
-                                $params["model"] = '<div class="'.$params["hidden"].'">'
-                                                        . '<div class="form-group">'
-                                                                . '<label class="col-sm-2 control-label">'.$this->loc->getWord(strtoupper($params["col"]),false).'</label>'
-                                                                . '<div class="col-sm-2">'
-                                                                        . '<div class="input-append date" id="'.$params["col"].'"  data-date="1975-01-01" data-date-format="yyyy-mm-dd" data-date-viewmode="years">'
-                                                                            . '<input '.$params["style"].' name="'.$params["col"].'" type="date" value="'.$params["dataForm"]['data'][0]->$params["col"].'" readonly '.$params["required"].'>'
-                                                                            . '<span class="add-on"><i class="glyphicon glyphicon-calendar"></i></span>'
-                                                                        . '</div>'
-                                                                    . '</div>'
+                        case 'hidden':
+                                $params["model"] =  '<input type="hidden" id="'.$params["col"].'" name="'.$params["col"].'" placeholder="'.$this->loc->getWord(strtoupper($params["col"]),false).'" value="'.$params["dataForm"]['data'][0]->$params["col"].'">';
+                            break;
+                        case 'date':
+                                $params["model"] =  '<div class="form-group">'
+                                                        . '<label class="control-label">'.$this->loc->getWord($params["col"]).'</label>'
+                                                        . '<div class="input-append date" id="'.$params["col"].'"  data-date="1975-01-01" data-date-format="yyyy-mm-dd" data-date-viewmode="years">'
+                                                            . '<input class="form-control" '.$params["style"].' name="'.$params["col"].'" type="date" value="'.$params["dataForm"]['data'][0]->$params["col"].'" readonly '.$params["required"].'>'
+                                                            . '<span class="add-on"><i class="glyphicon glyphicon-calendar"></i></span>'
                                                         . '</div>'
                                                     . '</div>'
                                                     . '<script>'
@@ -177,45 +186,38 @@ class Grid extends DBManager
                                                     . '</script>';
                         break;
                         case 'varchar':
-                                $params["model"] = '<div class="'.$params["hidden"].'">'
-                                                        . '<div class="form-group">'
-                                                            . '<label  class="col-sm-2 control-label">'.$this->loc->getWord(strtoupper($params["col"]),false).'</label>'
-                                                            .'<div class="col-sm-2">'
-                                                                . '<input type="text" '.$params["style"].' id="'.$params["col"].'" name="'.$params["col"].'" placeholder="'.$this->loc->getWord(strtoupper($params["col"]),false).'" value="'.$params["dataForm"]['data'][0]->$params["col"].'"  '.$params["required"].'>'
-                                                            . '</div>'
-                                                        . '</div>'
+                                $params["model"] = '<div class="form-group">'
+                                                        . '<label for="'.$params["col"].'">'.$this->loc->getWord($params["col"]).'</label>'
+                                                        . '<input type="text" class="form-control" '.$params["style"].' id="'.$params["col"].'" name="'.$params["col"].'" placeholder="'.$this->loc->getWord(strtoupper($params["col"]),false).'" value="'.$params["dataForm"]['data'][0]->$params["col"].'"  '.$params["required"].'>'
                                                     . '</div>';
                             break;
                         case 'email':
-                                $params["model"] = '<div class="'.$params["hidden"].'">'
-                                                        . '<div class="form-group">'
-                                                            . '<label  class="col-sm-2 control-label">'.$this->loc->getWord(strtoupper($params["col"]),false).'</label>'
-                                                            . '<div class="col-sm-2">'
-                                                                    . '<input type="email" '.$params["style"].' id="'.$params["col"].'" name="'.$params["col"].'" placeholder="'.$this->loc->getWord(strtoupper($params["col"]),false).'" value="'.$params["dataForm"]['data'][0]->$params["col"].'" data-error="Bruh, that email address is invalid"  '.$params["required"].'>'
-                                                            . '</div>'
-                                                        . '</div>'
+                                $params["model"] =  '<div class="form-group">'
+                                                        . '<label for="'.$params["col"].'">'.$this->loc->getWord($params["col"]).'</label>'
+                                                        . '<input type="email" class="form-control" '.$params["style"].' id="'.$params["col"].'" name="'.$params["col"].'" placeholder="'.$this->loc->getWord(strtoupper($params["col"]),false).'" value="'.$params["dataForm"]['data'][0]->$params["col"].'" data-error="Bruh, that email address is invalid"  '.$params["required"].'>'
                                                     . '</div>';
                         break;			
                         case 'int':
-                                $params["model"] = '<div class="'.$params["hidden"].'">'
-                                                        . '<div class="form-group">'
-                                                            . '<label  class="col-sm-2 control-label">'.$this->loc->getWord(strtoupper($params["col"]),false).'</label>'
-                                                            . '<div class="col-sm-2">'
-                                                                . '<input type="number" '.$params["style"].' id="'.$params["col"].'" name="'.$params["col"].'" placeholder="'.$this->loc->getWord(strtoupper($params["col"]),false).'" value="'.$params["dataForm"]['data'][0]->$params["col"].'" '.$params["required"].'>'
-                                                            . '</div>'
-                                                        . '</div>'
+                                $params["model"] =  '<div class="form-group">'
+                                                        . '<label for="'.$params["col"].'">'.$this->loc->getWord($params["col"]).'</label>'
+                                                        . '<input type="number" class="form-control" '.$params["style"].' id="'.$params["col"].'" name="'.$params["col"].'" placeholder="'.$this->loc->getWord($params["col"]).'" value="'.$params["dataForm"]['data'][0]->$params["col"].'" '.$params["required"].'>'
                                                     . '</div>';
                         break;
-                        case 'Enum':
-                                $QueryData = $this->EnumData($params["value"]["enum"]);
-                                $params["model"] = '<div class="'.$params["hidden"].'">'
+                        case 'enum':
+                                $enums = array("table" => $this->entity["tableName"], "id" => $params["col"]);
+                                $QueryData = $this->EnumData($enums);
+                                $countQueryData = count($QueryData);
+                                $options = "";
+                                for($i = 0; $i < $countQueryData; $i++){
+                                    $element = explode(":",$QueryData[$i]);
+                                    $options .='<option value ="'.htmlspecialchars($element[0]).'" >'.htmlspecialchars($element[1]).'</option>';
+                                }
+                                $params["model"] = '<div>'
                                                         . '<div class="form-group">'
-                                                            . '<label  class="col-sm-2 control-label">'.$this->loc->getWord(strtoupper($params["col"]),false).'</label>'
-                                                            . '<div class="col-sm-2">'
-                                                                . '<select style="height:30px; max-width: 100%;" class="form-control" id="'.$params["col"].'" name="'.$params["col"].'" placeholder="'.$this->loc->getWord(strtoupper($params["col"]),false).'" required>'
-                                                                    .$QueryData
-                                                                . '</select> '
-                                                            . '</div>'
+                                                            . '<label for="'.$params["col"].'">'.$this->loc->getWord($params["col"]).'</label>'
+                                                            . '<select class="form-control" id="'.$params["col"].'" name="'.$params["col"].'" required>'
+                                                                .$options
+                                                            . '</select> '
                                                         . '</div>'
                                                         .'<script>'
                                                             . 'jQuery(function(){'
@@ -226,15 +228,20 @@ class Grid extends DBManager
                         break;
                         case 'Referenced':
                                 $QueryData = $this->RelationShipData($params["value"]["references"]);
-                                $params["model"] = '<div class="'.$params["hidden"].'">'
+                                $countQueryData = count($QueryData);
+                                $options = "";
+                                for($i = 0; $i < $countQueryData; $i++){
+                                    $element = explode(":",$QueryData[$i]);
+                                    $options .='<option value ="'.htmlspecialchars($element[0]).'" >'.htmlspecialchars($element[1]).'</option>';
+                                }
+                            
+                                $params["model"] = '<div>'
                                                         . '<div class="form-group">'
-                                                            . '<label  class="col-sm-2 control-label">'.$this->loc->getWord(strtoupper($params["col"]),false).'</label>'
-                                                            . '<div class="col-sm-2">'
-                                                                . '<select style="height:30px; max-width: 100%;" class="form-control" id="'.$params["col"].'" name="'.$params["col"].'" placeholder="'.$this->loc->getWord(strtoupper($params["col"]),false).'" required>'
-                                                                        .$QueryData
-                                                                . '</select>'
-                                                            . '</div>'
-                                                            . '</div>'
+                                                            . '<label for="'.$params["col"].'">'.$this->loc->getWord($params["col"]).'</label>'
+                                                            . '<select class="form-control" id="'.$params["col"].'" name="'.$params["col"].'" placeholder="'.$this->loc->getWord($params["col"]).'" required>'
+                                                                    .$options
+                                                            . '</select>'
+                                                        . '</div>'
                                                             . '<script>'
                                                                     . 'jQuery(function(){'
                                                                             . 'jQuery("#'.$params["col"].'").val("'.$params["dataForm"]['data'][0]->$params["col"].'");'

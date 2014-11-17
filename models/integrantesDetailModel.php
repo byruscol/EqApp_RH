@@ -95,8 +95,9 @@ class integrantesDetail extends DBManagerModel{
         $data = array(
                         "tableName" => $this->pluginPrefix."integrantesDetails"
                         ,"entityConfig" => $CRUD
+                        ,"formConfig" => array("cols" => 3)
                         ,"atributes" => array(
-                            "integranteId" => array("type" => "int", "PK" => 0, "required" => false, "readOnly" => true, "autoIncrement" => true)
+                            "integranteId" => array("type" => "int", "PK" => 0, "required" => false, "hidden" => true,  "readOnly" => true, "autoIncrement" => true)
                             ,"fondoCesantiasId" => array("type" => "tinyint", "required" => true, "references" => array("table" => $this->pluginPrefix."fondoCesantias", "id" => "fondoCesantiasId", "text" => "fondoCesantias"))
                             ,"epsid" => array("type" => "tinyint", "required" => true, "references" => array("table" => $this->pluginPrefix."epss", "id" => "epsid", "text" => "eps"))
                             ,"afpId" => array("type" => "tinyint", "required" => true, "references" => array("table" => $this->pluginPrefix."afps", "id" => "afpId", "text" => "afp"))
@@ -104,8 +105,8 @@ class integrantesDetail extends DBManagerModel{
                             ,"cajaCompensacionId" => array("type" => "tinyint", "required" => true, "references" => array("table" => $this->pluginPrefix."cajaCompensacion", "id" => "cajaCompensacionId", "text" => "cajaCompensacion"))
                             ,"gustoCaja" => array("type" => "enum", "required" => true)
                             ,"planComplementario" => array("type" => "enum", "required" => true)
-                            ,"planComplementarioDesc" => array("type" => "text", "required" => false)
-                            ,"departamento" => array("type" => "tinyint", "isTableCol" => false, "hidden" => true, "edithidden" => true, "required" => true, "references" => array("table" => $this->pluginPrefix."departamentos", "id" => "departamentoId", "text" => "departamento"),
+                            ,"planComplementarioDesc" => array("type" => "varchar", "required" => false)
+                            ,"departamento" => array("type" => "tinyint", "isTableCol" => false, "required" => true, "references" => array("table" => $this->pluginPrefix."departamentos", "id" => "departamentoId", "text" => "departamento"),
                                                          "dataEvents" => array(
                                                                                 array("type" => "change",
                                                                                       "fn" => "@function(e) {"
@@ -133,21 +134,20 @@ class integrantesDetail extends DBManagerModel{
                                                         )
                             ,"ciudadSedeId" => array("type" => "tinyint", "required" => true, "references" => array("table" => $this->pluginPrefix."ciudades", "id" => "ciudadId", "text" => "ciudad"))
                             ,"unidadId" => array("type" => "tinyint", "required" => true, "references" => array("table" => $this->pluginPrefix."unidades", "id" => "unidadId", "text" => "unidad"))
-                            ,"reintegrado" => array("type" => "enum", "required" => true, "hidden" => true, "edithidden" => true)
-                            ,"cuantasVecesReintegrado" => array("type" => "int","required" => false, "hidden" => true, "edithidden" => true)
+                            ,"reintegrado" => array("type" => "enum", "required" => true)
+                            ,"cuantasVecesReintegrado" => array("type" => "int","required" => false)
                             ,"tipoContratacion" => array("type" => "enum", "required" => true)
                             ,"estrato" => array("type" => "enum", "required" => true)
-                            ,"alergia" => array("type" => "enum", "required" => true, "hidden" => true, "edithidden" => true)
-                            ,"alergias" => array("type" => "varchar", "required" => false, "hidden" => true, "edithidden" => true)
-                            ,"fuma" => array("type" => "enum", "required" => true, "hidden" => true, "edithidden" => true)
-                            ,"toma" => array("type" => "enum", "required" => true, "hidden" => true, "edithidden" => true)
-                            ,"tallaCamisa" => array("type" => "enum", "required" => true, "hidden" => true, "edithidden" => true)
-                            ,"tallaPantalon" => array("type" => "int", "required" => true, "hidden" => true, "edithidden" => true)
-                            ,"tallaZapatos" => array("type" => "varchar", "required" => true, "hidden" => true, "edithidden" => true)
-                            ,"tipoCelular" => array("type" => "enum", "required" => true, "hidden" => true, "edithidden" => true)
-                            ,"tipoLineaCelular" => array("type" => "enum", "required" => true, "hidden" => true, "edithidden" => true)
+                            ,"alergia" => array("type" => "enum", "required" => true)
+                            ,"alergias" => array("type" => "varchar", "required" => false)
+                            ,"fuma" => array("type" => "enum", "required" => true)
+                            ,"toma" => array("type" => "enum", "required" => true)
+                            ,"tallaCamisa" => array("type" => "enum", "required" => true)
+                            ,"tallaPantalon" => array("type" => "int", "required" => true)
+                            ,"tallaZapatos" => array("type" => "varchar", "required" => true)
+                            ,"tipoCelular" => array("type" => "enum", "required" => true)
+                            ,"tipoLineaCelular" => array("type" => "enum", "required" => true)
                             ,"parentId" => array("type" => "int","required" => false, "hidden" => true, "isTableCol" => false)
-                            
                             )
                     );
             return $data;
