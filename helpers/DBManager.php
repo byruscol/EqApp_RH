@@ -10,8 +10,8 @@ abstract class DBManager{
     public $pluginPrefix;
     public $wpPrefix;
     public $pluginPath;
-    public $pluginURL;
     public $currentUser;
+    protected $pluginURL;
     protected $query;
     protected $DBOper = array("table" => "", "data" => array(), "filter" => array());
     protected $totalRows;

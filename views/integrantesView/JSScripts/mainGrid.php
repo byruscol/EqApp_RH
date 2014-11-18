@@ -20,12 +20,16 @@ $params = array("numRows" => 10
                                         array("type" => "onSelectRow"
                                                   ,"function" => 'function(id) {
                                                                     if(id != null) {
-                                                                            /*var postDataObj = jQuery("#integrantesDetail").jqGrid("getGridParam","postData");
-                                                                            postDataObj["filter"] = id;
-                                                                            postDataObj["parent"] = "'.$_GET["view"].'";
-                                                                            jQuery("#integrantesDetail").jqGrid("setGridParam",{postData: postDataObj})
-                                                                                            .trigger("reloadGrid");
-*/
+                                                                            var params = {action:"action"
+                                                                                          , filter: id
+                                                                                          , id: "integrantesDetail"
+                                                                                          };
+                                                                            reSetformData("integrantesDetailForm")
+                                                                            jQuery("#integranteId").val(id);
+                                                                            enableElements(jQuery("#integrantesDetail").children());
+                                                                            getFormData("integrantesDetail", params);
+
+                                                    
                                                                             var postDataObj = jQuery("#familiares").jqGrid("getGridParam","postData");
                                                                             postDataObj["filter"] = id;
                                                                             postDataObj["parent"] = "'.$_GET["view"].'";

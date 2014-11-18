@@ -86,7 +86,10 @@ class mainController //extends resources
         wp_enqueue_style( 'gridCss' );
         wp_register_style( 'pluginCss', $this->pluginURL . 'css/plugincss.css');
         wp_enqueue_style( 'pluginCss' );
-
+        wp_register_style( 'normalizeCss', $this->pluginURL . 'css/normalize.css');
+        wp_enqueue_style( 'normalizeCss' );
+        wp_register_style( 'datepickerCss', $this->pluginURL . 'css/datepicker.css');
+        wp_enqueue_style( 'datepickerCss' );
 
         $this->headScripts[] = 'jquery';
         wp_register_script('locale_es', $this->pluginURL . 'js/jqGrid/grid.locale-es.js', $this->headScripts);
@@ -105,6 +108,10 @@ class mainController //extends resources
         wp_enqueue_script( 'tinymce' );
 
         $this->headScripts[] = 'tinymce';
+        wp_register_script('validator',  $this->pluginURL . 'js/validator.js',$this->headScripts);
+        wp_enqueue_script( 'validator' );
+
+        $this->headScripts[] = 'validator';
         wp_register_script('tinymceJQuery',  $this->pluginURL . 'js/tinymce/jquery.tinymce.min.js',$this->headScripts);
         wp_enqueue_script( 'tinymceJQuery' );
 
@@ -137,6 +144,10 @@ class mainController //extends resources
 	wp_enqueue_script( 'ExportExcelclient' );
 		
 	$this->headScripts[] = 'ExportExcelclient';
+        wp_register_script('bootstrap-datepicker', $this->pluginURL . 'js/bootstrap-datepicker.js',$this->headScripts);
+	wp_enqueue_script( 'bootstrap-datepicker' );
+		
+	$this->headScripts[] = 'bootstrap-datepicker';
     }
 
     function viewJSScripts() {

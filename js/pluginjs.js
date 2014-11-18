@@ -75,3 +75,46 @@ function ajaxFileUpload(id, url, elementId, oper, parentRelationShip, gridId)
         ) 
     }
  }  
+ 
+function getFormData(id, params){
+    jQuery.ajax({   type: "POST"
+                    ,url: "admin-ajax.php"
+                    ,data: params
+                }).done(function(data){
+                        var objJson = jQuery.parseJSON(data);
+                        if(data == "[]"){
+                            jQuery("#oper").val("add");
+                        }
+                        else{
+                            jQuery("#oper").val("edit");
+                            setformData(id, objJson);
+                        }
+                    });
+}
+
+function reSetformData(id){
+    jQuery('#'+id).trigger("reset");
+}
+
+function setformData(id, obj){
+    for(xx in obj[0]){
+        if(jQuery("#"+xx))
+            jQuery("#"+xx).val(obj[0][xx]);
+    }
+}
+
+function disableElements(el) {
+    for (var i = 0; i < el.length; i++) {
+        el[i].disabled = true;
+
+        disableElements(el[i].children);
+    }
+}
+
+function enableElements(el) {
+    for (var i = 0; i < el.length; i++) {
+        el[i].disabled = false;
+
+        enableElements(el[i].children);
+    }
+}

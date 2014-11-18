@@ -11,11 +11,11 @@ class Grid extends DBManager
     private $colnames = array();
     private $baseId;
     private $params;
-    private $loc;
     private $beforeShowForm = "";
     private $type;
     protected $model;
     protected $entity;
+    protected $loc;
     public $ValidateEdit = false;
     public $view;
     public $validateFileSize = false;
@@ -172,7 +172,7 @@ class Grid extends DBManager
                                 $params["model"] =  '<input type="hidden" id="'.$params["col"].'" name="'.$params["col"].'" placeholder="'.$this->loc->getWord(strtoupper($params["col"]),false).'" value="'.$params["dataForm"]['data'][0]->$params["col"].'">';
                             break;
                         case 'date':
-                                $params["model"] =  '<div class="form-group">'
+                                $params["model"] =  '<div>'
                                                         . '<label class="control-label">'.$this->loc->getWord($params["col"]).'</label>'
                                                         . '<div class="input-append date" id="'.$params["col"].'"  data-date="1975-01-01" data-date-format="yyyy-mm-dd" data-date-viewmode="years">'
                                                             . '<input class="form-control" '.$params["style"].' name="'.$params["col"].'" type="date" value="'.$params["dataForm"]['data'][0]->$params["col"].'" readonly '.$params["required"].'>'
@@ -186,19 +186,19 @@ class Grid extends DBManager
                                                     . '</script>';
                         break;
                         case 'varchar':
-                                $params["model"] = '<div class="form-group">'
+                                $params["model"] = '<div>'
                                                         . '<label for="'.$params["col"].'">'.$this->loc->getWord($params["col"]).'</label>'
-                                                        . '<input type="text" class="form-control" '.$params["style"].' id="'.$params["col"].'" name="'.$params["col"].'" placeholder="'.$this->loc->getWord(strtoupper($params["col"]),false).'" value="'.$params["dataForm"]['data'][0]->$params["col"].'"  '.$params["required"].'>'
+                                                        . '<input type="text" class="form-control" '.$params["style"].' id="'.$params["col"].'" name="'.$params["col"].'" placeholder="'.$this->loc->getWord($params["col"]).'" value="'.$params["dataForm"]['data'][0]->$params["col"].'"  '.$params["required"].'>'
                                                     . '</div>';
                             break;
                         case 'email':
-                                $params["model"] =  '<div class="form-group">'
+                                $params["model"] =  '<div>'
                                                         . '<label for="'.$params["col"].'">'.$this->loc->getWord($params["col"]).'</label>'
-                                                        . '<input type="email" class="form-control" '.$params["style"].' id="'.$params["col"].'" name="'.$params["col"].'" placeholder="'.$this->loc->getWord(strtoupper($params["col"]),false).'" value="'.$params["dataForm"]['data'][0]->$params["col"].'" data-error="Bruh, that email address is invalid"  '.$params["required"].'>'
+                                                        . '<input type="email" class="form-control" '.$params["style"].' id="'.$params["col"].'" name="'.$params["col"].'" placeholder="'.$this->loc->getWord($params["col"]).'" value="'.$params["dataForm"]['data'][0]->$params["col"].'" data-error="Bruh, that email address is invalid"  '.$params["required"].'>'
                                                     . '</div>';
                         break;			
                         case 'int':
-                                $params["model"] =  '<div class="form-group">'
+                                $params["model"] =  '<div>'
                                                         . '<label for="'.$params["col"].'">'.$this->loc->getWord($params["col"]).'</label>'
                                                         . '<input type="number" class="form-control" '.$params["style"].' id="'.$params["col"].'" name="'.$params["col"].'" placeholder="'.$this->loc->getWord($params["col"]).'" value="'.$params["dataForm"]['data'][0]->$params["col"].'" '.$params["required"].'>'
                                                     . '</div>';
@@ -213,9 +213,9 @@ class Grid extends DBManager
                                     $options .='<option value ="'.htmlspecialchars($element[0]).'" >'.htmlspecialchars($element[1]).'</option>';
                                 }
                                 $params["model"] = '<div>'
-                                                        . '<div class="form-group">'
+                                                        . '<div>'
                                                             . '<label for="'.$params["col"].'">'.$this->loc->getWord($params["col"]).'</label>'
-                                                            . '<select class="form-control" id="'.$params["col"].'" name="'.$params["col"].'" required>'
+                                                            . '<select class="form-control" id="'.$params["col"].'" name="'.$params["col"].'" '.$params["required"].'>'
                                                                 .$options
                                                             . '</select> '
                                                         . '</div>'
@@ -236,9 +236,9 @@ class Grid extends DBManager
                                 }
                             
                                 $params["model"] = '<div>'
-                                                        . '<div class="form-group">'
+                                                        . '<div>'
                                                             . '<label for="'.$params["col"].'">'.$this->loc->getWord($params["col"]).'</label>'
-                                                            . '<select class="form-control" id="'.$params["col"].'" name="'.$params["col"].'" placeholder="'.$this->loc->getWord($params["col"]).'" required>'
+                                                            . '<select class="form-control" id="'.$params["col"].'" name="'.$params["col"].'" placeholder="'.$this->loc->getWord($params["col"]).'" '.$params["required"].'>'
                                                                     .$options
                                                             . '</select>'
                                                         . '</div>'

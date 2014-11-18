@@ -12,7 +12,7 @@ class integrantesDetail extends DBManagerModel{
         $start = $params["limit"] * $params["page"] - $params["limit"];
         $query = "SELECT `integranteId`,
                             `fondoCesantiasId`,
-                            `epsid`,
+                            `epsId`,
                             `afpId`,
                             `arl`,
                             `cajaCompensacionId`,
@@ -26,7 +26,7 @@ class integrantesDetail extends DBManagerModel{
                             `cuantasVecesReintegrado`,
                             `tipoContratacion`,
                             `estrato`,
-                            `alerigia`,
+                            `alergia`,
                             `alergias`,
                             `fuma`,
                             `toma`,
@@ -37,7 +37,7 @@ class integrantesDetail extends DBManagerModel{
                             `tipoLineaCelular`
                         FROM `".$this->pluginPrefix."integrantesDetails` i
                             JOIN ".$this->pluginPrefix."ciudades c ON c.ciudadId = i.ciudadSedeId
-                        WHERE i.`deleted` = 0 AND i.`integranteId` = ". $params["filter"];
+                        WHERE i.`integranteId` = ". $params["filter"];
 
         if(array_key_exists('where', $params)){
             if (is_array( $params["where"]->rules )){
@@ -51,19 +51,18 @@ class integrantesDetail extends DBManagerModel{
            $query .= " AND (". $this->buildWhere($params["where"]) .")";
         }
         //echo $query;
-        return $this->getDataGrid($query, $start, $params["limit"] , $params["sidx"], $params["sord"] );
+        
+        $data = $this->getDataGrid($query, $start, $params["limit"] , $params["sidx"], $params["sord"] );
+        $data["customResponce"] = true;
+        return $data;
     }
     
     public function add(){
-        $_POST["integranteId"] = $_POST["parentId"];
         $this->addRecord($this->entity(), $_POST, array("date_entered" => date("Y-m-d H:i:s"), "created_by" => $this->currentUser->ID));
-        echo json_encode(array("parentId" => $this->LastId));
     }
     
     public function edit(){
-        $entityObj = $this->entity();
-        $this->updateRecord($entityObj, $_POST, array("infoIdiomaId" => $_POST["infoIdiomaId"]));
-        echo json_encode(array("parentId" => $_POST["infoIdiomaId"]));
+        $this->updateRecord($this->entity(), $_POST, array("integranteId" => $_POST["integranteId"]));
     }
     
     public function del(){
@@ -95,11 +94,11 @@ class integrantesDetail extends DBManagerModel{
         $data = array(
                         "tableName" => $this->pluginPrefix."integrantesDetails"
                         ,"entityConfig" => $CRUD
-                        ,"formConfig" => array("cols" => 3)
+                        ,"formConfig" => array("cols" => 3, "fieldCheckOper" => "integranteId")
                         ,"atributes" => array(
-                            "integranteId" => array("type" => "int", "PK" => 0, "required" => false, "hidden" => true,  "readOnly" => true, "autoIncrement" => true)
+                            "integranteId" => array("type" => "int", "PK" => 0, "required" => false, "hidden" => true,  "readOnly" => true)
                             ,"fondoCesantiasId" => array("type" => "tinyint", "required" => true, "references" => array("table" => $this->pluginPrefix."fondoCesantias", "id" => "fondoCesantiasId", "text" => "fondoCesantias"))
-                            ,"epsid" => array("type" => "tinyint", "required" => true, "references" => array("table" => $this->pluginPrefix."epss", "id" => "epsid", "text" => "eps"))
+                            ,"epsId" => array("type" => "tinyint", "required" => true, "references" => array("table" => $this->pluginPrefix."epss", "id" => "epsid", "text" => "eps"))
                             ,"afpId" => array("type" => "tinyint", "required" => true, "references" => array("table" => $this->pluginPrefix."afps", "id" => "afpId", "text" => "afp"))
                             ,"arl" => array("type" => "varchar", "required" => true)
                             ,"cajaCompensacionId" => array("type" => "tinyint", "required" => true, "references" => array("table" => $this->pluginPrefix."cajaCompensacion", "id" => "cajaCompensacionId", "text" => "cajaCompensacion"))
@@ -147,7 +146,6 @@ class integrantesDetail extends DBManagerModel{
                             ,"tallaZapatos" => array("type" => "varchar", "required" => true)
                             ,"tipoCelular" => array("type" => "enum", "required" => true)
                             ,"tipoLineaCelular" => array("type" => "enum", "required" => true)
-                            ,"parentId" => array("type" => "int","required" => false, "hidden" => true, "isTableCol" => false)
                             )
                     );
             return $data;
