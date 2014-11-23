@@ -20,8 +20,6 @@ class Form extends Grid
         function rederForm(){
             $form = $this->ColModelFromTableForm();
             echo 'jQuery(\'#'.$this->view.'\').html(\''.$form.'\')';
-            
-            //echo 'jQuery("#integrantesDetail").html(\'<form id="form" data-toggle="validator" role="form"><div class="row"></div><div class="row"></div><div class="row"><div class="show">dfgfgd</div></div><div class="row"></div><div class="row"></div><div class="row"></div><div class="row"></div><div class="row"></div><div class="row"><div class="hidden">dfgfgd</div></div><div class="row"></div><div class="row"></div><div class="row"><div class="hidden">dfgfgd</div></div><div class="row"><div class="col-md-7"><br><div id="dialog-message" title="Datos cargados"></div><button href="#" type="submit" class="btn btn-primary" id="save">Submit</button></div></form>\')';
         }
 	
 	function ColModelFromTableForm(){

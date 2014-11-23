@@ -136,7 +136,7 @@ class integrantes extends DBManagerModel{
                                                                                                     . "var thisval = $(e.target).val();"
                                                                                                     . "jQuery.post("
                                                                                                         . "  'admin-ajax.php',"
-                                                                                                        . " { action: 'action', id: '" . $this->view . "', method: 'getCities', filter: thisval }"
+                                                                                                        . " { action: 'action', id: 'integrantes', method: 'getCities', filter: thisval }"
                                                                                                     . ")"
                                                                                                     . " .done(function( msg ) {"
                                                                                                                 . "var data = jQuery.parseJSON(msg);"

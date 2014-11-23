@@ -25,15 +25,30 @@ $params = array("numRows" => 10
                                                                                           , id: "integrantesDetail"
                                                                                           };
                                                                             reSetformData("integrantesDetailForm")
-                                                                            jQuery("#integranteId").val(id);
+                                                                            jQuery("#integrantesDetailForm").find("#integranteId").val(id);
                                                                             enableElements(jQuery("#integrantesDetail").children());
                                                                             getFormData("integrantesDetail", params);
-
+                                                                            
+                                                                            var params = {action:"action"
+                                                                                          , filter: id
+                                                                                          , id: "integrantesTalentos"
+                                                                                          };
+                                                                                          
+                                                                            reSetformData("integrantesTalentosForm")
+                                                                            jQuery("#integrantesTalentosForm").find("#integranteId").val(id);
+                                                                            enableElements(jQuery("#integrantesTalentos").children());
+                                                                            getFormData("integrantesTalentos", params);
                                                     
                                                                             var postDataObj = jQuery("#familiares").jqGrid("getGridParam","postData");
                                                                             postDataObj["filter"] = id;
                                                                             postDataObj["parent"] = "'.$_GET["view"].'";
                                                                             jQuery("#familiares").jqGrid("setGridParam",{postData: postDataObj})
+                                                                                            .trigger("reloadGrid");
+                                                                                            
+                                                                            postDataObj = jQuery("#hobies").jqGrid("getGridParam","postData");
+                                                                            postDataObj["filter"] = id;
+                                                                            postDataObj["parent"] = "'.$_GET["view"].'";
+                                                                            jQuery("#hobies").jqGrid("setGridParam",{postData: postDataObj})
                                                                                             .trigger("reloadGrid");
 
 

@@ -272,12 +272,13 @@ class Grid extends DBManager
     		$this->colnames[] = $col;
     		
     		$hidden = (isset($value['hidden']) && $value['hidden'] == true)? true: false;
-                $editable = (isset($value['editable']))? isset($value['editable']): true;
                 $required = ($value['required'])? true: false;
                 $sortable = (isset($value['sortable']) )? $value['sortable']: true;
                 
+                if($value["type"])
+                    $editable = true;
+                
     		if($hidden){
-                    $editable = false;
                     $required = false;
                     $sortable = false;
                 }
@@ -300,10 +301,10 @@ class Grid extends DBManager
     				'index'=> $col,
     				'align' => 'center',
     				'sortable' => $sortable,
-    				'editable' => true,
+    				'editable' => (isset($value['editable']) && $value['editable'] == false)? false: true,
     				'editrules' => array('required' => $required),
     				'formoptions' => $option,
-    				'hidden' => $hidden,
+    				'hidden' => (isset($value['hidden']) && $value['hidden'] == true)? true: false,
     				'classes'=> 'ellipsis'
     		);
     		

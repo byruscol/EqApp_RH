@@ -69,15 +69,7 @@ class integrantesDetail extends DBManagerModel{
         $this->delRecord($this->entity(), array("infoIdiomaId" => $_POST["id"]));
     }
 
-    public function detail($params = array()){
-        $entity = $this->entity();
-        $query = "SELECT i.`infoIdiomaId`, `idioma`, `hablado`, `escrito`,
-                         `escucha`,`integranteId` 
-                    FROM ".$entity["tableName"]."
-                    WHERE `infoAcademicaId` = ". $params["filter"];
-        $this->queryType = "row";
-        return $this->getDataGrid($query);
-    }
+    public function detail($params = array()){}
     
     public function getCities($params){
         $query = "SELECT ciudadId, ciudad 

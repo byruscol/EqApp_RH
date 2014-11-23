@@ -83,10 +83,10 @@ function getFormData(id, params){
                 }).done(function(data){
                         var objJson = jQuery.parseJSON(data);
                         if(data == "[]"){
-                            jQuery("#oper").val("add");
+                            jQuery('#'+id).find('#oper').val("add");
                         }
                         else{
-                            jQuery("#oper").val("edit");
+                            jQuery('#'+id).find('#oper').val("edit");
                             setformData(id, objJson);
                         }
                     });
