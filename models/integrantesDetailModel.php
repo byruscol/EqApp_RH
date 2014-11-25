@@ -14,13 +14,16 @@ class integrantesDetail extends DBManagerModel{
                             `fondoCesantiasId`,
                             `epsId`,
                             `afpId`,
-                            `arl`,
+                            `arlId`,
                             `cajaCompensacionId`,
                             `gustoCaja`,
                             `planComplementario`,
                             `planComplementarioDesc`,
+                            riesgoLaboralId,
+                            factorRiesgo,
                             departamentoId departamento,
                             `ciudadSedeId`,
+                            empresa,
                             `unidadId`,
                             `reintegrado`,
                             `cuantasVecesReintegrado`,
@@ -92,11 +95,13 @@ class integrantesDetail extends DBManagerModel{
                             ,"fondoCesantiasId" => array("type" => "tinyint", "required" => true, "references" => array("table" => $this->pluginPrefix."fondoCesantias", "id" => "fondoCesantiasId", "text" => "fondoCesantias"))
                             ,"epsId" => array("type" => "tinyint", "required" => true, "references" => array("table" => $this->pluginPrefix."epss", "id" => "epsid", "text" => "eps"))
                             ,"afpId" => array("type" => "tinyint", "required" => true, "references" => array("table" => $this->pluginPrefix."afps", "id" => "afpId", "text" => "afp"))
-                            ,"arl" => array("type" => "varchar", "required" => true)
+                            ,"arlId" => array("type" => "tinyint", "required" => true, "references" => array("table" => $this->pluginPrefix."arls", "id" => "arlId", "text" => "arl"))
                             ,"cajaCompensacionId" => array("type" => "tinyint", "required" => true, "references" => array("table" => $this->pluginPrefix."cajaCompensacion", "id" => "cajaCompensacionId", "text" => "cajaCompensacion"))
                             ,"gustoCaja" => array("type" => "enum", "required" => true)
                             ,"planComplementario" => array("type" => "enum", "required" => true)
                             ,"planComplementarioDesc" => array("type" => "varchar", "required" => false)
+                            ,"riesgoLaboralId" => array("type" => "tinyint", "required" => true, "references" => array("table" => $this->pluginPrefix."riesgoLaboral", "id" => "riesgoLaboralId", "text" => "riesgoLaboral"))
+                            ,"factorRiesgo" => array("type" => "int", "required" => false)
                             ,"departamento" => array("type" => "tinyint", "isTableCol" => false, "required" => true, "references" => array("table" => $this->pluginPrefix."departamentos", "id" => "departamentoId", "text" => "departamento"),
                                                          "dataEvents" => array(
                                                                                 array("type" => "change",
@@ -124,6 +129,7 @@ class integrantesDetail extends DBManagerModel{
                                                                                 )
                                                         )
                             ,"ciudadSedeId" => array("type" => "tinyint", "required" => true, "references" => array("table" => $this->pluginPrefix."ciudades", "id" => "ciudadId", "text" => "ciudad"))
+                            ,"empresa" => array("type" => "enum", "required" => true)
                             ,"unidadId" => array("type" => "tinyint", "required" => true, "references" => array("table" => $this->pluginPrefix."unidades", "id" => "unidadId", "text" => "unidad"))
                             ,"reintegrado" => array("type" => "enum", "required" => true)
                             ,"cuantasVecesReintegrado" => array("type" => "int","required" => false)
