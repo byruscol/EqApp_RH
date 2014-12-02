@@ -11,8 +11,8 @@ class infoLaboral extends DBManagerModel{
 
         $start = $params["limit"] * $params["page"] - $params["limit"];
         $query = "SELECT i.`infoLaboralId`, `empresa`, `fechaIngreso`, `fechaRetiro`,
-                         PERIOD_DIFF(DATE_FORMAT(if(`fechaRetiro` IS NULL, NOW(),`fechaRetiro`),'%Y%m'),DATE_FORMAT(`fechaIngreso`,'%Y%m')) tiempo,
-                         `cargo`, `tipoActividad`, `areaDesarrollo`,`integranteId`, f.ext soporte, f.fileId, '' file
+                         PERIOD_DIFF(DATE_FORMAT(if(`fechaRetiro` = '0000-00-00', NOW(),`fechaRetiro`),'%Y%m'),DATE_FORMAT(`fechaIngreso`,'%Y%m')) tiempo,
+                         actual, `cargo`, `tipoActividad`, `areaDesarrollo`,`integranteId`, f.ext soporte, f.fileId, '' file
                     FROM ".$entity["tableName"]." i
 			LEFT JOIN ".$this->pluginPrefix."filesInfoLaboral fi ON fi.infoLaboralId = i.infoLaboralId 
 			LEFT JOIN ".$this->pluginPrefix."files f ON f.fileId = fi.fileId
@@ -35,12 +35,16 @@ class infoLaboral extends DBManagerModel{
     
     public function add(){
         $_POST["integranteId"] = $_POST["parentId"];
+        $_POST["fechaIngreso"] = $this->formatDate($_POST["fechaIngreso"]);
+        $_POST["fechaRetiro"] = (empty($_POST["fechaRetiro"]))? "NULL": $this->formatDate($_POST["fechaRetiro"]);
         $this->addRecord($this->entity(), $_POST, array("date_entered" => date("Y-m-d H:i:s"), "created_by" => $this->currentUser->ID));
         echo json_encode(array("parentId" => $this->LastId));
     }
     
     public function edit(){
         $entityObj = $this->entity();
+        $_POST["fechaIngreso"] = $this->formatDate($_POST["fechaIngreso"]);
+        $_POST["fechaRetiro"] = (empty($_POST["fechaRetiro"]))? "NULL": $this->formatDate($_POST["fechaRetiro"]);
         $this->updateRecord($entityObj, $_POST, array("infoLaboralId" => $_POST["infoLaboralId"]));
         echo json_encode(array("parentId" => $_POST["infoLaboralId"]));
     }
@@ -72,14 +76,16 @@ class infoLaboral extends DBManagerModel{
                             ,"fechaIngreso" => array("type" => "date", "required" => true)
                             ,"fechaRetiro" => array("type" => "date", "required" => false)
                             ,"tiempo" => array("type" => "tinyint", "isTableCol" => false, "readOnly" => true)
+                            ,"actual" => array("type" => "enum", "required" => true)
                             ,"cargo" => array("type" => "varchar", "hidden" => false, "edithidden" => true, "required" => true)
                             ,"tipoActividad" => array("type" => "enum", "required" => true)
                             ,"areaDesarrollo" => array("type" => "enum", "required" => true)
-                            ,"parentId" => array("type" => "int","required" => false, "hidden" => true, "isTableCol" => false)
-                            ,"integranteId" => array("type" => "int", "update" => false,"required" => false, "hidden" => true)
+                            ,"integranteId" => array("type" => "int", "readOnly" => true, "update" => false,"required" => false, "hidden" => true)
                             ,"soporte" => array("type" => "varchar", "required" => false, "readOnly" => true, "hidden" => false, "isTableCol" => false, "downloadFile" => array("show" => true, "cellIcon" => 9, "rowObjectId" => 9, "view" => "files"))
                             ,"fileId" => array("type" => "int", "hidden" => true, "required" => false, "readOnly" => true, "hidden" => true, "isTableCol" => false)
                             ,"file" => array("type" => "file", "validateAttr" => array("size" => 200, "units" => "MB", "factor" => 1024), "required" => false,"hidden" => true, "edithidden" => true, "isTableCol" => false)
+                            ,"parentId" => array("type" => "int","required" => false, "hidden" => true, "readOnly" => true, "isTableCol" => false)  
+                            
                         )
                     );
             return $data;

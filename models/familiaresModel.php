@@ -54,12 +54,14 @@ class familiares extends DBManagerModel{
 
     public function add(){
         $_POST["integranteId"] = $_POST["parentId"];
+        $_POST["fechaNacimiento"] = $this->formatDate($_POST["fechaNacimiento"]);
         $this->addRecord($this->entity(), $_POST, array("date_entered" => date("Y-m-d H:i:s"), "created_by" => $this->currentUser->ID));
         echo json_encode(array("parentId" => $this->LastId));
     }
     
     public function edit(){
         $entityObj = $this->entity();
+        $_POST["fechaNacimiento"] = $this->formatDate($_POST["fechaNacimiento"]);
         $this->updateRecord($entityObj, $_POST, array("familiarId" => $_POST["familiarId"]));
         echo json_encode(array("parentId" => $_POST["familiarId"]));
     }

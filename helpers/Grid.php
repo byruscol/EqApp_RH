@@ -53,7 +53,7 @@ class Grid extends DBManager
             if(array_key_exists('filter', $references)){
                 $query .= " WHERE " . $references["id"] ." " . $references["filter"]["op"] . " " . $references["filter"]["value"];
             }
-            
+            //echo $query;
             $Relation = $this->getDataGrid($query, null, null, $references["text"], "ASC");
 
             foreach ( $Relation["data"] as $k => $v ){

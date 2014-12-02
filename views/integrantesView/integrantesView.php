@@ -22,6 +22,7 @@
         <li><a href="#infoLaboralTab" data-toggle="tab"><?php echo $resource->getWord("laboral"); ?></a></li>  
         <li><a href="#infoAcademicaTab" data-toggle="tab"><?php echo $resource->getWord("academica"); ?></a></li>
         <li><a href="#infoIdiomasTab" data-toggle="tab"><?php echo $resource->getWord("idiomas"); ?></a></li>
+        <li><a href="#redesSocialesTab" data-toggle="tab"><?php echo $resource->getWord("redesSociales"); ?></a></li>
         </ul>
         <div id="TabContent" class="tab-content">
             <div class="tab-pane fade active" id="integrantesDetailTab">
@@ -74,6 +75,15 @@
                     <div class="ui-jqgrid ui-widget ui-corner-all clear-margin span12" dir="ltr" style="">
                         <table id="infoIdiomas"></table>
                         <div id="infoIdiomasPager"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade active" id="redesSocialesTab">
+                <div class="spacer10"></div>
+                <div class="jqGrid">
+                    <div class="ui-jqgrid ui-widget ui-corner-all clear-margin span12" dir="ltr" style="">
+                        <table id="redesSociales"></table>
+                        <div id="redesSocialesPager"></div>
                     </div>
                 </div>
             </div>

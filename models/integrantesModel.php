@@ -80,10 +80,12 @@ class integrantes extends DBManagerModel{
     }
     
     public function add(){
+        $_POST["fechaNacimiento"] = $this->formatDate($_POST["fechaNacimiento"]);
         $this->addRecord($this->entity(), $_POST, array("date_entered" => date("Y-m-d H:i:s"), "created_by" => $this->currentUser->ID));
         echo json_encode(array("parentId" => $this->LastId));
     }
     public function edit(){
+        $_POST["fechaNacimiento"] = $this->formatDate($_POST["fechaNacimiento"]);
         $this->updateRecord($this->entity(), $_POST, array("integranteId" => $_POST["integranteId"])/*, array("columnValidateEdit" => "assigned_user_id")*/);
         echo json_encode(array("parentId" => $_POST["integranteId"]));
     }

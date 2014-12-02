@@ -27,7 +27,9 @@ class Form extends Grid
             $formColmodel = '<form id="'.$this->view.'Form" class="form-horizontal" data-toggle="validator" role="form"><input type="hidden" id="oper" name="oper" value="">';
             $colSize = round(12/$this->entity["formConfig"]["cols"],0);
             $i = 0;
+            $dataEvents = "";
             foreach ($this->entity["atributes"] as $col => $value){
+                
                 if(array_key_exists('references', $value))
                     $colType = "Referenced";
                 elseif(array_key_exists('enum', $value))
@@ -53,9 +55,17 @@ class Form extends Grid
                 $formColmodel .= $this->typeDataStructure($colType,array("model" => $model, "style" => $style,"col" => $col, "value" => $value, "dataForm" => $this->data, "required" => $required, "hidden" => $hidden));
                 if($hidden == 'show')
                     $formColmodel .= '</div>';
+                if(array_key_exists('dataEvents', $value)){
+                    $countEvents = count($value["dataEvents"]);
+                    for($m = 0; $m < $countEvents; $m++){
+                        $dataEvents .= 'jQuery("#'.$col.'").'.$value["dataEvents"][$m]["type"].'('.$value["dataEvents"][$m]["fn"].');';
+                    }
+                    
+                }
             }
             $formColmodel .= '<div class="row-fluid"><div class="col-xs-12 col-md-12"><div id="dialog-message" title="Datos cargados"></div><button href="#" type="submit" class="btn btn-primary pull-right" id="save">'.$this->loc->getWord("accept").'</button></div></div></form>'
                           . '<script>'
+                          . $dataEvents
                           . '	jQuery(document).ready(function() {'
 			  . '			jQuery("#'.$this->view.'Form").validator("validate");'
                           . '      		jQuery("#'.$this->view.'Form").submit(function(e){'
@@ -83,89 +93,6 @@ class Form extends Grid
 			  . '			});'
 			  . '		});'
 			  . '	</script>';	
-            /*$this->data = $this->model->getList();
-		$PrimaryKey = 0;
-		
-		$countCols = count($this->entity["atributes"]);
-		$j=1;
-		$k=1;
-		$i=0;
-		$numCols = 2;
-		$columnValidateEdit = "";
-		$formColmodel = '<form id="form" data-toggle="validator" role="form">';
-		foreach ($this->entity["atributes"] as $col => $value){
-                    if(isset($value['PK'])){
-                        $PrimaryKey = $this->data['data'][0]->$col;
-                    }	
-
-                    $this->colnames[] = $col;
-                    $label = $col;
-                    if(isset($value['label'])){
-                        $label = $value['label'];
-                    }
-
-                    if($i==0){
-                            $formColmodel .= '<div class="row">';
-                    }else{				
-                        if($i==2){
-                            $i=0;
-                            $formColmodel .= '</div><div class="row">';
-                        }
-                    }
-                    $i++;
-
-                    $required = ($value['required'])? 'required': ''; 
-
-                    if(array_key_exists('references', $value))
-                        $colType = "Referenced";
-                    elseif(array_key_exists('enum', $value))
-                        $colType = "enum";
-                    else
-                        $colType = $value["type"];
-
-                    $style = 'style="height:15px; max-width: 80%;" class="form-control"';
-
-                    $hidden = (isset($value['hidden']) && $value['hidden'] == true)? 'hidden': 'show';
-
-                    $formColmodel .= $this->typeDataStructure($colType,array("model" => $model, "style" => $style,"col" => $col, "value" => $value, "dataForm" => $this->data, "required" => $required, "hidden" => $hidden));
-		}
-		$formColmodel .='';
-		$formColmodel .='<div class="col-md-7"><br><div id="dialog-message" title="Datos cargados"></div><button href="#" type="submit" class="btn btn-primary" id="save">Submit</button></div></form>';
-		*/		
-		/*$formColmodel .='<script>
-					$(document).ready(function() {
-						$("#form").validator("validate");
-						
-						$("#form").submit(function(e){
-							e.preventDefault();
-							if($("#save").hasClass("disabled")) {
-								"";
-							}else{
-								form = $("#form").serialize();
-								//$.post("'.plugins_url().'/'.$this->pluginName.'/edit.php?controller='.$this->entity["Model"].'&oper=edit", form)
-								var oper = "add";
-								if('.$PrimaryKey.'!=0)
-									oper = "edit";
-									
-								$.ajax({
-									type: "POST",
-									url: "'.plugins_url().'/'.$this->pluginName.'/edit.php?controller='.$this->entity["Model"].'&oper="+oper,
-									data: form,						 
-									success: function(data){
-									    $( "#dialog-message" ).dialog({
-                                                                                    modal: true,
-                                                                                    buttons: {
-                                                                                        Ok: function() {
-                                                                                            $( this ).dialog( "close" );
-                                                                                        }
-                                                                                    }
-										});
-									}
-								});
-							}
-						});
-					});
-				</script>';*/
 		return $formColmodel;
 	}
 }

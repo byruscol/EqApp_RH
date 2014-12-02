@@ -69,6 +69,12 @@ $params = array("numRows" => 10
                                                                             postDataObj["parent"] = "'.$_GET["view"].'";
                                                                             jQuery("#infoIdiomas").jqGrid("setGridParam",{postData: postDataObj})
                                                                                             .trigger("reloadGrid");
+                                                                                            
+                                                                            postDataObj = jQuery("#redesSociales").jqGrid("getGridParam","postData");
+                                                                            postDataObj["filter"] = id;
+                                                                            postDataObj["parent"] = "'.$_GET["view"].'";
+                                                                            jQuery("#redesSociales").jqGrid("setGridParam",{postData: postDataObj})
+                                                                                            .trigger("reloadGrid");
                                                                     }
                                                                 }'
                                                 )

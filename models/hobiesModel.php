@@ -7,11 +7,11 @@ class hobies extends DBManagerModel{
     public function getList($params = array()){
         $entity = $this->entity();
         $start = $params["limit"] * $params["page"] - $params["limit"];
-        $query = "SELECT i.integrantesHobiesId, i.`integranteId`, h.tipoHobieId
-                        , i.`hobieId`
+        $query = "SELECT i.integrantesHobiesId, i.`integranteId`/*, h.tipoHobieId*/
+                        , actividad /*i.`hobieId`*/
                   FROM ".$entity["tableName"]." i
-			JOIN ".$this->pluginPrefix."hobies h ON h.hobieId = i.hobieId
-                        JOIN ".$this->pluginPrefix."tipoHobies c ON c.tipoHobieId = h.tipoHobieId
+			/*JOIN ".$this->pluginPrefix."hobies h ON h.hobieId = i.hobieId
+                        JOIN ".$this->pluginPrefix."tipoHobies c ON c.tipoHobieId = h.tipoHobieId*/
                   WHERE deleted = 0 AND `integranteId` = ". $params["filter"];
         
         if(array_key_exists('where', $params)){
@@ -27,7 +27,7 @@ class hobies extends DBManagerModel{
             
            $query .= " AND (". $this->buildWhere($params["where"]) .")";
         }
-        
+        //echo $query;
         return $this->getDataGrid($query, $start, $params["limit"] , $params["sidx"], $params["sord"]);
     }
 
@@ -46,28 +46,13 @@ class hobies extends DBManagerModel{
         $this->addRecord($this->entity(), $_POST, array("date_entered" => date("Y-m-d H:i:s"), "created_by" => $this->currentUser->ID));
     }
     public function edit(){
-        $this->updateRecord($this->entity(), $_POST, array("integranteId" => $_POST["integranteId"])/*, array("columnValidateEdit" => "assigned_user_id")*/);
-        echo json_encode(array("parentId" => $_POST["integranteId"]));
+        $this->updateRecord($this->entity(), $_POST, array("integrantesHobiesId" => $_POST["integranteId"])/*, array("columnValidateEdit" => "assigned_user_id")*/);
     }
     public function del(){
         $this->delRecord($this->entity(), array("integrantesHobiesId" => $_POST["id"])/*, array("columnValidateEdit" => "assigned_user_id")*/);
     }
 
-    public function detail($params = array()){
-        $entity = $this->entity();
-        $query = "  SELECT `integranteId`, tipoIdentificacion, `identificacion`, activo, `nombre`, `apellido`
-                                    , `genero`, `rhId`, `fechaNacimiento`, DATE_FORMAT(FROM_DAYS(DATEDIFF(NOW(), fechaNacimiento)), '%Y')+0 edad
-                                    , telefono, celular
-                                    ,  email, emailPersonal, `direccion`, d.departamento
-                                    ,  c.ciudad ciudadRecidenciaId, `localidad`
-                                    , `barrio` 
-                    FROM ".$entity["tableName"]." i
-                       JOIN ".$this->pluginPrefix."ciudades c ON c.ciudadId = i.ciudadRecidenciaId
-                       JOIN ".$this->pluginPrefix."departamentos d ON d.departamentoId = c.departamentoId
-                    WHERE i.`integranteId` = " . $params["filter"];
-        $this->queryType = "row";
-        return $this->getDataGrid($query);
-    }
+    public function detail($params = array()){}
     
     public function entity($CRUD = array())
     {
@@ -77,7 +62,7 @@ class hobies extends DBManagerModel{
                             ,"atributes" => array(
                                 "integrantesHobiesId" => array("type" => "int", "PK" => 0, "required" => false, "readOnly" => true, "autoIncrement" => true)
                                 ,"integranteId" => array("type" => "int", "required" => false, "readOnly" => true, "hidden" => true)
-                                ,"tipoHobieId" => array("type" => "tinyint", "isTableCol" => false, "required" => true, "references" => array("table" => $this->pluginPrefix."tipoHobies", "id" => "tipoHobieId", "text" => "hobie"),
+                                /*,"tipoHobieId" => array("type" => "tinyint", "isTableCol" => false, "required" => true, "references" => array("table" => $this->pluginPrefix."tipoHobies", "id" => "tipoHobieId", "text" => "hobie"),
                                                          "dataEvents" => array(
                                                                                 array("type" => "change",
                                                                                       "fn" => "@function(e) {"
@@ -102,8 +87,9 @@ class hobies extends DBManagerModel{
                                                                                             . "}@"
                                                                                     )
                                                                                 )
-                                                        )
-                                ,"hobieId" => array("type" => "tinyint", "required" => true, "references" => array("table" => $this->pluginPrefix."hobies", "id" => "hobieId", "text" => "hobie"))
+                                                        )*/
+                                ,"actividad" => array("type" => "varchar", "hidden" => false, "required" => true)
+                                //,"hobieId" => array("type" => "tinyint", "required" => true, "references" => array("table" => $this->pluginPrefix."hobies", "id" => "hobieId", "text" => "hobie"))
                                 ,"parentId" => array("type" => "int","required" => false, "hidden" => true, "readOnly" => true,"isTableCol" => false)
                                 )
                     );

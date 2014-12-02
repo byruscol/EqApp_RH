@@ -34,12 +34,14 @@ class infoAcademica extends DBManagerModel{
     
     public function add(){
         $_POST["integranteId"] = $_POST["parentId"];
+        $_POST["fechaTerminacion"] = $this->formatDate($_POST["fechaTerminacion"]);
         $this->addRecord($this->entity(), $_POST, array("date_entered" => date("Y-m-d H:i:s"), "created_by" => $this->currentUser->ID));
         echo json_encode(array("parentId" => $this->LastId));
     }
     
     public function edit(){
         $entityObj = $this->entity();
+        $_POST["fechaTerminacion"] = $this->formatDate($_POST["fechaTerminacion"]);
         $this->updateRecord($entityObj, $_POST, array("infoAcademicaId" => $_POST["infoAcademicaId"]));
         echo json_encode(array("parentId" => $_POST["infoAcademicaId"]));
     }

@@ -105,26 +105,26 @@ class integrantesDetail extends DBManagerModel{
                             ,"departamento" => array("type" => "tinyint", "isTableCol" => false, "required" => true, "references" => array("table" => $this->pluginPrefix."departamentos", "id" => "departamentoId", "text" => "departamento"),
                                                          "dataEvents" => array(
                                                                                 array("type" => "change",
-                                                                                      "fn" => "@function(e) {"
-                                                                                                    . "var thisval = $(e.target).val();"
-                                                                                                    . "jQuery.post("
-                                                                                                        . "  'admin-ajax.php',"
-                                                                                                        . " { action: 'action', id: '" . $this->view . "', method: 'getCities', filter: thisval }"
-                                                                                                    . ")"
-                                                                                                    . " .done(function( msg ) {"
-                                                                                                                . "var data = jQuery.parseJSON(msg);"
-                                                                                                                . "var dropdown = jQuery('#ciudadSedeId');"
-                                                                                                                . "dropdown.empty();"
-                                                                                                                . "var newOptions = {};"
-                                                                                                                . "for(xx in data.rows){"
-                                                                                                                   . "newOptions[data.rows[xx].id] = data.rows[xx].cell[1];"
-                                                                                                                . "}"
-                                                                                                                . "jQuery.each(newOptions, function(key, value) {"
-                                                                                                                . " dropdown.append(jQuery('<option></option>')"
-                                                                                                                . "     .attr('value', key).text(value));"
-                                                                                                                . " });"
-                                                                                                        . "});"
-                                                                                            . "}@"
+                                                                                      "fn" => 'function(e) {'
+                                                                                                    . 'var thisval = jQuery(e.target).val();'
+                                                                                                    . 'jQuery.post('
+                                                                                                        . '  "admin-ajax.php",'
+                                                                                                        . ' { action: "action", id: "integrantesDetail", method: "getCities", filter: thisval }'
+                                                                                                    . ')'
+                                                                                                    . ' .done(function( msg ) {'
+                                                                                                                . 'var data = jQuery.parseJSON(msg);'
+                                                                                                                . 'var dropdown = jQuery("#ciudadSedeId");'
+                                                                                                                . 'dropdown.empty();'
+                                                                                                                . 'var newOptions = {};'
+                                                                                                                . 'for(xx in data.rows){'
+                                                                                                                   . 'newOptions[data.rows[xx].id] = data.rows[xx].cell[1];'
+                                                                                                                . '}'
+                                                                                                                . 'jQuery.each(newOptions, function(key, value) {'
+                                                                                                                . ' dropdown.append(jQuery("<option></option>")'
+                                                                                                                . '     .attr("value", key).text(value));'
+                                                                                                                . ' });'
+                                                                                                        . '});'
+                                                                                            . '}'
                                                                                     )
                                                                                 )
                                                         )

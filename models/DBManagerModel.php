@@ -20,6 +20,16 @@ abstract class DBManagerModel extends DBManager{
                                     );
         }
         
+        public function formatDate($date){
+            $dateParts = array();
+            $dateFormated = $date;
+            if(substr_count($date, '/') > 0){
+                $dateParts = explode("/",$date);
+                $dateFormated = $dateParts[2]."-".$dateParts[0]."-".$dateParts[1];
+            }
+            return $dateFormated;
+        }
+        
         function __destruct() {}
         
 	abstract protected function getList($params = array());
