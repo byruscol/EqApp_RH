@@ -32,8 +32,12 @@ class familiares extends DBManagerModel{
     }
     
     public function getIntegrantesFamiliares($params = array()){
-         $entity = $this->entity();
+        $entity = $this->entity();
         $DataArray= array();
+        $currentUserRoles = (array)$this->currentUser->roles;
+        if( !in_array( "administrator", $currentUserRoles ) && !in_array( "editor", $currentUserRoles )) 
+                $params["filter"] = $this->currentIntegrante;
+        
         $query = "SELECT  `familiarId`
                   FROM  `".$entity["tableName"]."` n
                   WHERE  `integranteId` = " . $params["filter"];
@@ -53,7 +57,11 @@ class familiares extends DBManagerModel{
     }
 
     public function add(){
-        $_POST["integranteId"] = $_POST["parentId"];
+        if( !in_array( "administrator", $currentUserRoles ) && !in_array( "editor", $currentUserRoles )) 
+                $_POST["integranteId"] = $this->currentIntegrante;
+        else
+            $_POST["integranteId"] = $_POST["parentId"];
+        
         $_POST["fechaNacimiento"] = $this->formatDate($_POST["fechaNacimiento"]);
         $this->addRecord($this->entity(), $_POST, array("date_entered" => date("Y-m-d H:i:s"), "created_by" => $this->currentUser->ID));
         echo json_encode(array("parentId" => $this->LastId));
@@ -67,7 +75,9 @@ class familiares extends DBManagerModel{
     }
     
     public function del(){
-        $this->delRecord($this->entity(), array("familiarId" => $_POST["id"]));
+        if( in_array( "administrator", $currentUserRoles ) || in_array( "editor", $currentUserRoles )){
+            $this->delRecord($this->entity(), array("familiarId" => $_POST["id"]));
+        }
     }
 
     public function detail($params = array()){

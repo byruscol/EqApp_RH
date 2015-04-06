@@ -1,5 +1,14 @@
+<?php
+require_once $pluginPath . "/helpers/Details.php";
+//$details = new Details($viewFile);
+$user = wp_get_current_user();
+$currentUserRoles = (array) $user->roles;
+?>
 <div class="row-fluid">
     <div class="span11">
+        <?php
+        if( in_array( "administrator", $currentUserRoles ) || in_array( "editor", $currentUserRoles )) :
+        ?>
         <div class="jqGrid">
             <div class="wrap">
                 <div id="icon-tools" class="icon32"></div>
@@ -10,6 +19,29 @@
             <div id="integrantesPager"></div>
             </div>
         </div>
+        <?php
+        else:
+        ?>
+        <div class="">
+            <div class="wrap">
+                <div id="icon-tools" class="icon32"></div>
+                <h2><?php echo $resource->getWord("integrante"); ?></h2>
+            </div>
+            <div class="span12">
+                <table  class="table table-bordered table-condensed">
+                    <tr>
+                        <td align="center"><?php //$details->getPicture(array("table" => 'fotosIntegrantes', "Id" => "IntegranteId"));?></td>
+                        <td rowspan="2"><div id="integrantes"></div></td>
+                    </tr>
+                    <tr>
+                        <td><?php //$details->setPictureForm('fotoIntegrantes');?></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <?php
+        endif;
+        ?>
     </div>
     
     <div class="span12"></div>
@@ -92,7 +124,7 @@
 </div>
 <div id="loading"><p><?php echo $resource->getWord("LoadingFile"); ?></p></div>
 <script>
-    jQuery(function () {
+    jQuery(function ($) {
         
         jQuery("#loading").dialog({
             closeOnEscape: false,
@@ -102,9 +134,24 @@
             height: 100/*,
             open: function(event, ui) { jQuery(".ui-dialog-titlebar-close").hide(); jQuery(".ui-dialog-titlebar").hide();}*/
          });
-      var tab = jQuery('#nonConformityTab li:eq(0) a').attr("href");
+      var tab = jQuery('#tabs li:eq(0) a').attr("href");
       jQuery(tab).css("opacity", 1);
+      <?php
+        if( in_array( "administrator", $currentUserRoles ) || in_array( "editor", $currentUserRoles )) :
+      ?>
       disableElements(jQuery('#integrantesDetail').children());
       disableElements(jQuery('#integrantesTalentos').children());
+      <?php else:?>
+          $("#oper").val("edit");
+          $("#tipoIdentificacion").attr('readonly','readonly');
+          $("#identificacion").attr('readonly','readonly');
+          $("#activo").attr('readonly','readonly');
+          $("#nombre").attr('readonly','readonly');
+          $("#apellido").attr('readonly','readonly');
+          $("#genero").attr('readonly','readonly');
+          $("#email").attr('readonly','readonly');
+          $("#Hijos").attr('readonly','readonly');
+                    
+      <?php endif;?>
    });
 </script>

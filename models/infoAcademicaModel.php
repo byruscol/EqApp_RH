@@ -9,6 +9,9 @@ class infoAcademica extends DBManagerModel{
         if(!array_key_exists('filter', $params))
                 $params["filter"] = 0;
  
+        if( !in_array( "administrator", $currentUserRoles ) && !in_array( "editor", $currentUserRoles )) 
+                $params["filter"] = $this->currentIntegrante;
+        
         $start = $params["limit"] * $params["page"] - $params["limit"];
         $query = "SELECT i.`infoAcademicaId`, `titulo`, `institucion`, `fechaTerminacion`,
                          `nivelAcademico`,`integranteId`, f.ext soporte, f.fileId, '' file
@@ -33,7 +36,11 @@ class infoAcademica extends DBManagerModel{
     }
     
     public function add(){
-        $_POST["integranteId"] = $_POST["parentId"];
+        if( !in_array( "administrator", $currentUserRoles ) && !in_array( "editor", $currentUserRoles )) 
+                $_POST["integranteId"] = $this->currentIntegrante;
+        else
+            $_POST["integranteId"] = $_POST["parentId"];
+        
         $_POST["fechaTerminacion"] = $this->formatDate($_POST["fechaTerminacion"]);
         $this->addRecord($this->entity(), $_POST, array("date_entered" => date("Y-m-d H:i:s"), "created_by" => $this->currentUser->ID));
         echo json_encode(array("parentId" => $this->LastId));

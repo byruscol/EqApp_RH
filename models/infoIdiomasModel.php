@@ -8,7 +8,10 @@ class infoIdiomas extends DBManagerModel{
         $entity = $this->entity();
         if(!array_key_exists('filter', $params))
                 $params["filter"] = 0;
- 
+        
+        if( !in_array( "administrator", $currentUserRoles ) && !in_array( "editor", $currentUserRoles )) 
+                $params["filter"] = $this->currentIntegrante;
+        
         $start = $params["limit"] * $params["page"] - $params["limit"];
         $query = "SELECT i.`infoIdiomaId`, `idioma`, `hablado`, `escrito`,
                          `escucha`,`integranteId`, f.ext soporte, f.fileId, '' file
@@ -33,7 +36,11 @@ class infoIdiomas extends DBManagerModel{
     }
     
     public function add(){
-        $_POST["integranteId"] = $_POST["parentId"];
+        if( !in_array( "administrator", $currentUserRoles ) && !in_array( "editor", $currentUserRoles )) 
+                $_POST["integranteId"] = $this->currentIntegrante;
+        else
+            $_POST["integranteId"] = $_POST["parentId"];
+        
         $this->addRecord($this->entity(), $_POST, array("date_entered" => date("Y-m-d H:i:s"), "created_by" => $this->currentUser->ID));
         echo json_encode(array("parentId" => $this->LastId));
     }
@@ -50,10 +57,11 @@ class infoIdiomas extends DBManagerModel{
 
     public function detail($params = array()){
         $entity = $this->entity();
+        
         $query = "SELECT i.`infoIdiomaId`, `idioma`, `hablado`, `escrito`,
                          `escucha`,`integranteId` 
                     FROM ".$entity["tableName"]."
-                    WHERE `infoAcademicaId` = ". $params["filter"];
+                    WHERE `infoIdiomaId` = ". $params["filter"];
         $this->queryType = "row";
         return $this->getDataGrid($query);
     }

@@ -9,6 +9,9 @@ class integrantesDetail extends DBManagerModel{
         if(!array_key_exists('filter', $params))
                 $params["filter"] = 0;
  
+        if(!$this->isRhAdmin) 
+            $params["filter"] = $this->currentIntegrante;
+        
         $start = $params["limit"] * $params["page"] - $params["limit"];
         $query = "SELECT `integranteId`,
                             `fondoCesantiasId`,
@@ -61,15 +64,21 @@ class integrantesDetail extends DBManagerModel{
     }
     
     public function add(){
+        if(!$this->isRhAdmin) 
+                $_POST["integranteId"] = $this->currentIntegrante;
         $this->addRecord($this->entity(), $_POST, array("date_entered" => date("Y-m-d H:i:s"), "created_by" => $this->currentUser->ID));
     }
     
     public function edit(){
+        if(!$this->isRhAdmin)
+                $_POST["integranteId"] = $this->currentIntegrante;
         $this->updateRecord($this->entity(), $_POST, array("integranteId" => $_POST["integranteId"]));
     }
     
     public function del(){
-        $this->delRecord($this->entity(), array("infoIdiomaId" => $_POST["id"]));
+        if( in_array( "administrator", $this->currentUser->roles ) || in_array( "editor", $this->currentUser->roles )){
+            $this->delRecord($this->entity(), array("infoIdiomaId" => $_POST["id"]));
+        }
     }
 
     public function detail($params = array()){}

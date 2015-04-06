@@ -11,6 +11,8 @@ abstract class DBManager{
     public $wpPrefix;
     public $pluginPath;
     public $currentUser;
+    public $currentIntegrante;
+    public $isRhAdmin;
     protected $pluginURL;
     protected $query;
     protected $DBOper = array("table" => "", "data" => array(), "filter" => array());
@@ -34,6 +36,13 @@ abstract class DBManager{
             if(!empty($prefixPlugin)) $this->pluginPrefix .= $prefixPlugin;
             $this->currentUser = $current_user;
 
+            $query = "SELECT integranteId FROM ".$this->pluginPrefix."integrantesUsuarios i WHERE i.ID = ".$this->currentUser->ID;
+            $result = $this->get($query,"var");
+            $this->currentIntegrante = $result["data"];
+            $this->isRhAdmin = ( in_array( "administrator", $this->currentUser->roles ) 
+                                 || in_array( "editor", $this->currentUser->roles ))? true : false;
+                    
+            
             $this->gbd = new PDO('mysql:host='.$this->conn->dbhost.';dbname='.$this->conn->dbname, $this->conn->dbuser, $this->conn->dbpassword);
     }
 
@@ -372,6 +381,7 @@ abstract class DBManager{
                 $this->DBOper["data"]  = $updateData;
                 
                 $this->execute();
+                return $updateData;
             }
         }
     }

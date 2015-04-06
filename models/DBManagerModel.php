@@ -6,6 +6,7 @@ require_once $pluginPath . "/helpers/DBManager.php";
 require_once $pluginPath . "/helpers/mailSender.php";
 abstract class DBManagerModel extends DBManager{
         public $mail;
+        
         function __construct() {
             parent::__construct();
             $this->mail = new mailSender();

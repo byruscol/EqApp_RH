@@ -92,6 +92,11 @@ class files extends DBManagerModel{
                 
                 $this->addRecord($entityObj, $_POST, array("created" => date("Y-m-d H:i:s"), "created_by" => $this->currentUser->ID));
                 $id = $this->LastId;
+                
+                if($_POST["parentRelationShip"] == "fotoIntegrantes")
+                    $_POST["parentId"] = $this->currentUser->ID;
+                    
+                
                 $this->addRecord($relEntity, array($relEntity["parent"]["Id"] => $_POST["parentId"],"fileId" => $this->LastId), array());
                 $file = $target_path.$fileName.".".$_POST["ext"];
                 

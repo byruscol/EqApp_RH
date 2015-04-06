@@ -6,6 +6,9 @@ class redesSociales extends DBManagerModel{
    
     public function getList($params = array()){
         $entity = $this->entity();
+        if( !in_array( "administrator", $currentUserRoles ) && !in_array( "editor", $currentUserRoles )) 
+                $_POST["integranteId"] = $this->currentIntegrante;
+        
         $start = $params["limit"] * $params["page"] - $params["limit"];
         $query = "SELECT `IntegrantesRedesSocialesId`,
                         `integranteId`,
@@ -32,13 +35,20 @@ class redesSociales extends DBManagerModel{
     }
     
     public function add(){
+        if( !in_array( "administrator", $currentUserRoles ) && !in_array( "editor", $currentUserRoles )) 
+                $_POST["integranteId"] = $this->currentIntegrante;
+        else
         $_POST["integranteId"] = $_POST["parentId"];
         $this->addRecord($this->entity(), $_POST, array("date_entered" => date("Y-m-d H:i:s"), "created_by" => $this->currentUser->ID));
     }
     public function edit(){
+        if( !in_array( "administrator", $currentUserRoles ) && !in_array( "editor", $currentUserRoles )) 
+                $_POST["integranteId"] = $this->currentIntegrante;
         $this->updateRecord($this->entity(), $_POST, array("IntegrantesRedesSocialesId" => $_POST["IntegrantesRedesSocialesId"]));
     }
     public function del(){
+        if( !in_array( "administrator", $currentUserRoles ) && !in_array( "editor", $currentUserRoles )) 
+                $_POST["integranteId"] = $this->currentIntegrante;
         $this->delRecord($this->entity(), array("IntegrantesRedesSocialesId" => $_POST["id"]));
     }
 

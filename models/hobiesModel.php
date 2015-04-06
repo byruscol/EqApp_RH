@@ -7,6 +7,10 @@ class hobies extends DBManagerModel{
     public function getList($params = array()){
         $entity = $this->entity();
         $start = $params["limit"] * $params["page"] - $params["limit"];
+        
+        if( !in_array( "administrator", $currentUserRoles ) && !in_array( "editor", $currentUserRoles )) 
+                $params["filter"] = $this->currentIntegrante;
+        
         $query = "SELECT i.integrantesHobiesId, i.`integranteId`/*, h.tipoHobieId*/
                         , actividad /*i.`hobieId`*/
                   FROM ".$entity["tableName"]." i
@@ -42,7 +46,11 @@ class hobies extends DBManagerModel{
     }
     
     public function add(){
-        $_POST["integranteId"] = $_POST["parentId"];
+        if( !in_array( "administrator", $currentUserRoles ) && !in_array( "editor", $currentUserRoles )) 
+                $_POST["integranteId"] = $this->currentIntegrante;
+        else
+            $_POST["integranteId"] = $_POST["parentId"];
+        
         $this->addRecord($this->entity(), $_POST, array("date_entered" => date("Y-m-d H:i:s"), "created_by" => $this->currentUser->ID));
     }
     public function edit(){

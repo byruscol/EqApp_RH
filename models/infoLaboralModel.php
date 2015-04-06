@@ -9,6 +9,9 @@ class infoLaboral extends DBManagerModel{
         if(!array_key_exists('filter', $params))
                 $params["filter"] = 0;
 
+        if( !in_array( "administrator", $currentUserRoles ) && !in_array( "editor", $currentUserRoles )) 
+                $params["filter"] = $this->currentIntegrante;
+        
         $start = $params["limit"] * $params["page"] - $params["limit"];
         $query = "SELECT i.`infoLaboralId`, `empresa`, `fechaIngreso`, `fechaRetiro`,
                          PERIOD_DIFF(DATE_FORMAT(if(`fechaRetiro` = '0000-00-00', NOW(),`fechaRetiro`),'%Y%m'),DATE_FORMAT(`fechaIngreso`,'%Y%m')) tiempo,
@@ -34,7 +37,11 @@ class infoLaboral extends DBManagerModel{
     }
     
     public function add(){
-        $_POST["integranteId"] = $_POST["parentId"];
+        if( !in_array( "administrator", $currentUserRoles ) && !in_array( "editor", $currentUserRoles )) 
+                $_POST["integranteId"] = $this->currentIntegrante;
+        else
+            $_POST["integranteId"] = $_POST["parentId"];
+        
         $_POST["fechaIngreso"] = $this->formatDate($_POST["fechaIngreso"]);
         $_POST["fechaRetiro"] = (empty($_POST["fechaRetiro"]))? "NULL": $this->formatDate($_POST["fechaRetiro"]);
         $this->addRecord($this->entity(), $_POST, array("date_entered" => date("Y-m-d H:i:s"), "created_by" => $this->currentUser->ID));
@@ -43,6 +50,7 @@ class infoLaboral extends DBManagerModel{
     
     public function edit(){
         $entityObj = $this->entity();
+        
         $_POST["fechaIngreso"] = $this->formatDate($_POST["fechaIngreso"]);
         $_POST["fechaRetiro"] = (empty($_POST["fechaRetiro"]))? "NULL": $this->formatDate($_POST["fechaRetiro"]);
         $this->updateRecord($entityObj, $_POST, array("infoLaboralId" => $_POST["infoLaboralId"]));
@@ -55,6 +63,8 @@ class infoLaboral extends DBManagerModel{
 
     public function detail($params = array()){
         $entity = $this->entity();
+        if( !in_array( "administrator", $currentUserRoles ) && !in_array( "editor", $currentUserRoles )) 
+                $params["filter"] = $this->currentIntegrante;
         $query = "SELECT `infoLaboralId`, `empresa`, `fechaIngreso`, `fechaRetiro`,
                          PERIOD_DIFF(DATE_FORMAT(if(`fechaRetiro` IS NULL, NOW(),`fechaRetiro`),'%Y%m'),DATE_FORMAT(`fechaIngreso`,'%Y%m')) tiempo,
                          `cargo`, `tipoActividad`, `areaDesarrollo` 
