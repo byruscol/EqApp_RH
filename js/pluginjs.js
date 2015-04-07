@@ -51,7 +51,7 @@ function ajaxFileUpload(id, url, elementId, oper, parentRelationShip, gridId)
                 secureuri: false,
                 fileElementId: elementId,
                 dataType: 'json',
-                data: { parentId: id, oper: oper, parentRelationShip: parentRelationShip },
+                data: { parentId: id, oper: oper, parentRelationShip: parentRelationShip, idFile: elementId },
                 success: function (data, status) {
 
                     if (typeof (data.msg) != 'undefined') {

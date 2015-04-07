@@ -9,7 +9,7 @@ class infoLaboral extends DBManagerModel{
         if(!array_key_exists('filter', $params))
                 $params["filter"] = 0;
 
-        if( !in_array( "administrator", $currentUserRoles ) && !in_array( "editor", $currentUserRoles )) 
+        if( !$this->isRhAdmin) 
                 $params["filter"] = $this->currentIntegrante;
         
         $start = $params["limit"] * $params["page"] - $params["limit"];
@@ -37,7 +37,7 @@ class infoLaboral extends DBManagerModel{
     }
     
     public function add(){
-        if( !in_array( "administrator", $currentUserRoles ) && !in_array( "editor", $currentUserRoles )) 
+        if( !$this->isRhAdmin) 
                 $_POST["integranteId"] = $this->currentIntegrante;
         else
             $_POST["integranteId"] = $_POST["parentId"];
@@ -63,7 +63,7 @@ class infoLaboral extends DBManagerModel{
 
     public function detail($params = array()){
         $entity = $this->entity();
-        if( !in_array( "administrator", $currentUserRoles ) && !in_array( "editor", $currentUserRoles )) 
+        if( !$this->isRhAdmin) 
                 $params["filter"] = $this->currentIntegrante;
         $query = "SELECT `infoLaboralId`, `empresa`, `fechaIngreso`, `fechaRetiro`,
                          PERIOD_DIFF(DATE_FORMAT(if(`fechaRetiro` IS NULL, NOW(),`fechaRetiro`),'%Y%m'),DATE_FORMAT(`fechaIngreso`,'%Y%m')) tiempo,

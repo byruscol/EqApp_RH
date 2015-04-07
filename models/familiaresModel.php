@@ -35,8 +35,8 @@ class familiares extends DBManagerModel{
         $entity = $this->entity();
         $DataArray= array();
         $currentUserRoles = (array)$this->currentUser->roles;
-        if( !in_array( "administrator", $currentUserRoles ) && !in_array( "editor", $currentUserRoles )) 
-                $params["filter"] = $this->currentIntegrante;
+        if( !$this->isRhAdmin)   
+            $params["filter"] = $this->currentIntegrante;
         
         $query = "SELECT  `familiarId`
                   FROM  `".$entity["tableName"]."` n
@@ -57,7 +57,7 @@ class familiares extends DBManagerModel{
     }
 
     public function add(){
-        if( !in_array( "administrator", $currentUserRoles ) && !in_array( "editor", $currentUserRoles )) 
+        if( !$this->isRhAdmin) 
                 $_POST["integranteId"] = $this->currentIntegrante;
         else
             $_POST["integranteId"] = $_POST["parentId"];
@@ -75,13 +75,12 @@ class familiares extends DBManagerModel{
     }
     
     public function del(){
-        if( in_array( "administrator", $currentUserRoles ) || in_array( "editor", $currentUserRoles )){
-            $this->delRecord($this->entity(), array("familiarId" => $_POST["id"]));
-        }
+        $this->delRecord($this->entity(), array("familiarId" => $_POST["id"]));
     }
 
     public function detail($params = array()){
         $entity = $this->entity();
+        
         $query = "SELECT familiarId, nombre, apellido, genero, fechaNacimiento"
                         . ", DATE_FORMAT(FROM_DAYS(DATEDIFF(NOW(), fechaNacimiento)), '%Y')+0 edad, tipo"
                         . ", estadoCivil, ocupacion, eps epsId, '' foto "

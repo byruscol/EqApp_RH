@@ -254,7 +254,7 @@ class integrantes extends DBManagerModel{
                             ,"formConfig" => array("cols" => 3, "fieldCheckOper" => "integranteId")
                             ,"atributes" => array(
                                 "integranteId" => array("type" => "int", "hidden" => true, "PK" => 0, "required" => false, "readOnly" => true, "autoIncrement" => true, "toolTip" => array("type" => "cell", "cell" => 2) )
-                                ,"tipoIdentificacion" => array("type" => "enum", "required" => true)
+                                ,"tipoIdentificacion" => array("type" => "enum", "required" => true, "readOnly" => true)
                                 ,"identificacion" => array("type" => "varchar", "required" => true)
                                 ,"activo" => array("type" => "enum", "required" => true)
                                 ,"nombre" => array("type" => "varchar", "required" => true)

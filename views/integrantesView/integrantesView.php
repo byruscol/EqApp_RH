@@ -1,6 +1,7 @@
 <?php
+
 require_once $pluginPath . "/helpers/Details.php";
-//$details = new Details($viewFile);
+$details = new Details($viewFile);
 $user = wp_get_current_user();
 $currentUserRoles = (array) $user->roles;
 ?>
@@ -30,11 +31,11 @@ $currentUserRoles = (array) $user->roles;
             <div class="span12">
                 <table  class="table table-bordered table-condensed">
                     <tr>
-                        <td align="center"><?php //$details->getPicture(array("table" => 'fotosIntegrantes', "Id" => "IntegranteId"));?></td>
+                        <td width="200" align="center"><?php $details->getPicture(array("table" => 'fotosIntegrantes', "Id" => "IntegranteId"));?></td>
                         <td rowspan="2"><div id="integrantes"></div></td>
                     </tr>
                     <tr>
-                        <td><?php //$details->setPictureForm('fotoIntegrantes');?></td>
+                        <td><?php $details->setPictureForm('fotoIntegrantes');?></td>
                     </tr>
                 </table>
             </div>
@@ -63,27 +64,29 @@ $currentUserRoles = (array) $user->roles;
                     <div id="integrantesDetail"></div>
                 </div>
             </div>
-            <div class="tab-pane fade active" id="integrantesTalentosTab">
+            <div class="tab-pane fade" id="integrantesTalentosTab">
                 <div class="spacer10"></div>
                 <div class="ui-jqgrid ui-widget ui-corner-all clear-margin span12" dir="ltr" style="">
                     <div id="integrantesTalentos"></div>
                 </div>
             </div>
-            <div class="tab-pane fade active" id="hobiesTab">
+            <div class="tab-pane fade" id="hobiesTab">
                 <div class="spacer10"></div>
                 <div class="ui-jqgrid ui-widget ui-corner-all clear-margin span12" dir="ltr" style="">
                     <table id="hobies"></table>
                     <div id="hobiesPager"></div>
                 </div>
             </div>
-            <div class="tab-pane fade active" id="familiaresTab">
+            <div class="tab-pane fade" id="familiaresTab">
                 <div class="spacer10"></div>
-                <div class="ui-jqgrid ui-widget ui-corner-all clear-margin span12" dir="ltr" style="">
-                    <table id="familiares"></table>
-                    <div id="familiaresPager"></div>
+                <div class="jqGrid">
+                    <div class="ui-jqgrid ui-widget ui-corner-all clear-margin span12" dir="ltr" style="">
+                        <table id="familiares"></table>
+                        <div id="familiaresPager"></div>
+                    </div>
                 </div>
             </div>
-            <div class="tab-pane fade active" id="infoLaboralTab">
+            <div class="tab-pane fade" id="infoLaboralTab">
                 <div class="spacer10"></div>
                 <div class="jqGrid">
                     <div class="ui-jqgrid ui-widget ui-corner-all clear-margin span12" dir="ltr" style="">
@@ -92,7 +95,7 @@ $currentUserRoles = (array) $user->roles;
                     </div>
                 </div>
             </div>
-            <div class="tab-pane fade active" id="infoAcademicaTab">
+            <div class="tab-pane fade" id="infoAcademicaTab">
                 <div class="spacer10"></div>
                 <div class="jqGrid">
                     <div class="ui-jqgrid ui-widget ui-corner-all clear-margin span12" dir="ltr" style="">
@@ -101,7 +104,7 @@ $currentUserRoles = (array) $user->roles;
                     </div>
                 </div>
             </div>
-            <div class="tab-pane fade active" id="infoIdiomasTab">
+            <div class="tab-pane fade" id="infoIdiomasTab">
                 <div class="spacer10"></div>
                 <div class="jqGrid">
                     <div class="ui-jqgrid ui-widget ui-corner-all clear-margin span12" dir="ltr" style="">
@@ -110,7 +113,7 @@ $currentUserRoles = (array) $user->roles;
                     </div>
                 </div>
             </div>
-            <div class="tab-pane fade active" id="redesSocialesTab">
+            <div class="tab-pane fade" id="redesSocialesTab">
                 <div class="spacer10"></div>
                 <div class="jqGrid">
                     <div class="ui-jqgrid ui-widget ui-corner-all clear-margin span12" dir="ltr" style="">
@@ -143,12 +146,21 @@ $currentUserRoles = (array) $user->roles;
       disableElements(jQuery('#integrantesTalentos').children());
       <?php else:?>
           $("#oper").val("edit");
-          $("#tipoIdentificacion").attr('readonly','readonly');
+          $("#integrantesDetailForm :input[name='oper']").val("edit"); 
+          $("#integrantesTalentosForm :input[name='oper']").val("edit"); 
+          $('<input>').attr({type: 'hidden',name: 'tipoIdentificacion',value: $("#tipoIdentificacion").children("option").filter(":selected").val()
+            }).appendTo('#integrantesForm');
+          
+          $("#tipoIdentificacion").attr('disabled','disabled');
           $("#identificacion").attr('readonly','readonly');
-          $("#activo").attr('readonly','readonly');
+          $('<input>').attr({type: 'hidden',name: 'activo',value: $("#activo").children("option").filter(":selected").val()
+            }).appendTo('#integrantesForm');
+          $("#activo").attr('disabled','disabled');
           $("#nombre").attr('readonly','readonly');
           $("#apellido").attr('readonly','readonly');
-          $("#genero").attr('readonly','readonly');
+          $('<input>').attr({type: 'hidden',name: 'genero',value: $("#genero").children("option").filter(":selected").val()
+            }).appendTo('#integrantesForm');
+          $("#genero").attr('disabled','disabled');
           $("#email").attr('readonly','readonly');
           $("#Hijos").attr('readonly','readonly');
                     

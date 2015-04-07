@@ -25,7 +25,11 @@ class Details extends DBManager
         parent::__construct();
         global $resource;
         $this->resourceDetails = $resource;
-        
+        if(!$this->isRhAdmin){
+            if(!isset($_GET["rowid"]))
+                $_GET["rowid"] = $this->currentIntegrante;
+            $_GET["task"] = "GO";
+        }
         if((isset($_GET["page"]) && !empty($_GET["page"])) && 
            (isset($_GET["task"]) && !empty($_GET["task"])) && 
            (isset($_GET["rowid"]) && !empty($_GET["rowid"])))
@@ -39,6 +43,7 @@ class Details extends DBManager
     }
     
     function getPicture($params){
+        
         $query = "SELECT fileId 
                     FROM ".$this->pluginPrefix.$params["table"]."
                     WHERE ".$params["Id"]." = ". $_GET["rowid"]

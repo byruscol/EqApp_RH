@@ -1,23 +1,29 @@
 <?php
 require_once $pluginPath . "/helpers/Details.php";
 $details = new Details($viewFile);
-
 global $controller;
-$integrante = (empty($_GET["Id"]))? 0 : $_GET["Id"];
+
+if($details->isRhAdmin)
+    $integrante = (empty($_GET["Id"]))? 0 : $_GET["Id"];
+else
+    $integrante = $details->currentIntegrante;
 if($integrante != 0)
     $familiares = $controller->model->getIntegrantesFamiliares(array("filter" => $integrante)); 
 else
     $familiares = $familiares["totalRows"] = 0;
+
 
 ?>
 <div class="row-fluid">
     <div class="span11">
         <h2><?php echo $resource->getWord("familiares"); ?></h2>
         <div class="wrap">
+            <?php if($details->isRhAdmin):?>
             <div id="remote">
                 <label for="inputEmail"><?php echo $resource->getWord("integrante"); ?></label>
                 <input type="text" name="q" id="query" class="form-control input-normal" value="<?php echo $_GET["name"]?>"/> 
             </div>
+            <?php endif;?>
         </div>
         
     </div>

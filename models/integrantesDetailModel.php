@@ -24,7 +24,7 @@ class integrantesDetail extends DBManagerModel{
                             `planComplementarioDesc`,
                             riesgoLaboralId,
                             factorRiesgo,
-                            departamentoId departamento,
+                            departamentoId departamentoSede,
                             `ciudadSedeId`,
                             empresa,
                             `unidadId`,
@@ -76,8 +76,8 @@ class integrantesDetail extends DBManagerModel{
     }
     
     public function del(){
-        if( in_array( "administrator", $this->currentUser->roles ) || in_array( "editor", $this->currentUser->roles )){
-            $this->delRecord($this->entity(), array("infoIdiomaId" => $_POST["id"]));
+        if($this->isRhAdmin){
+            $this->delRecord($this->entity(), array("integranteId" => $_POST["id"]));
         }
     }
 
@@ -111,7 +111,7 @@ class integrantesDetail extends DBManagerModel{
                             ,"planComplementarioDesc" => array("type" => "varchar", "required" => false)
                             ,"riesgoLaboralId" => array("type" => "tinyint", "required" => true, "references" => array("table" => $this->pluginPrefix."riesgoLaboral", "id" => "riesgoLaboralId", "text" => "riesgoLaboral"))
                             ,"factorRiesgo" => array("type" => "int", "required" => false)
-                            ,"departamento" => array("type" => "tinyint", "isTableCol" => false, "required" => true, "references" => array("table" => $this->pluginPrefix."departamentos", "id" => "departamentoId", "text" => "departamento"),
+                            ,"departamentoSede" => array("type" => "tinyint", "isTableCol" => false, "required" => true, "references" => array("table" => $this->pluginPrefix."departamentos", "id" => "departamentoId", "text" => "departamento"),
                                                          "dataEvents" => array(
                                                                                 array("type" => "change",
                                                                                       "fn" => 'function(e) {'

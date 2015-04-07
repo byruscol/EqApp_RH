@@ -210,7 +210,8 @@ class Grid extends DBManager
                                 $options = "";
                                 for($i = 0; $i < $countQueryData; $i++){
                                     $element = explode(":",$QueryData[$i]);
-                                    $options .='<option value ="'.htmlspecialchars($element[0]).'" >'.htmlspecialchars($element[1]).'</option>';
+                                    $selected = ($params["dataForm"]['data'][0]->$params["col"] == $element[0])? 'selected="selected"': "";
+                                    $options .='<option value ="'.htmlspecialchars($element[0]).'"'.$selected.'>'.htmlspecialchars($element[1]).'</option>';
                                 }
                                 $params["model"] = '<div>'
                                                         . '<div>'
@@ -219,20 +220,16 @@ class Grid extends DBManager
                                                                 .$options
                                                             . '</select> '
                                                         . '</div>'
-                                                        .'<script>'
-                                                            . 'jQuery(function(){'
-                                                                . 'jQuery("#'.$params["col"].'").val("'.$params["dataForm"]['data'][0]->$params["col"].'");'
-                                                            . '});'
-                                                        . '</script>'
                                                     . '</div>';
                         break;
                         case 'Referenced':
                                 $QueryData = $this->RelationShipData($params["value"]["references"]);
                                 $countQueryData = count($QueryData);
                                 $options = "";
-                                for($i = 0; $i < $countQueryData; $i++){
+                                for($i  = 0; $i < $countQueryData; $i++){
                                     $element = explode(":",$QueryData[$i]);
-                                    $options .='<option value ="'.htmlspecialchars($element[0]).'" >'.htmlspecialchars($element[1]).'</option>';
+                                    $selected = ($params["dataForm"]['data'][0]->$params["col"] == $element[0])? 'selected="selected"': "";
+                                    $options .='<option value ="'.htmlspecialchars($element[0]).'" '.$selected.'>'.htmlspecialchars($element[1]).'</option>';
                                 }
                             
                                 $params["model"] = '<div>'
@@ -242,11 +239,6 @@ class Grid extends DBManager
                                                                     .$options
                                                             . '</select>'
                                                         . '</div>'
-                                                            . '<script>'
-                                                                    . 'jQuery(function(){'
-                                                                            . 'jQuery("#'.$params["col"].'").val("'.$params["dataForm"]['data'][0]->$params["col"].'");'
-                                                                    . '});'
-                                                            . '</script>'
                                                     .'</div>';
                         break;
                     }

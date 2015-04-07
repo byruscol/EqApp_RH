@@ -21,7 +21,8 @@ abstract class DBManager{
     protected $LastId;
     protected $result;
     protected $gbd;
-
+    private $target_path;
+    
     function __construct() {
             global $wpdb;
             global $pluginURL;
@@ -34,6 +35,7 @@ abstract class DBManager{
             $this->wpPrefix = $this->conn->prefix;
             $this->pluginPrefix = $this->wpPrefix;
             if(!empty($prefixPlugin)) $this->pluginPrefix .= $prefixPlugin;
+            $this->target_path = $this->pluginPath."/files/";
             $this->currentUser = $current_user;
 
             $query = "SELECT integranteId FROM ".$this->pluginPrefix."integrantesUsuarios i WHERE i.ID = ".$this->currentUser->ID;
@@ -386,26 +388,19 @@ abstract class DBManager{
         }
     }
 
-    protected function uploadFile($fileId, $file, $table = 'files_data'){
-        
-        if($gestor = fopen($file,'rb')){
-
-            $sql = "INSERT INTO `".$this->pluginPrefix.$table."` (`fileId`, `data`) VALUES (:fileId,:data)";
-            $q = $this->gbd->prepare($sql);
-            $q->bindParam(':fileId',$fileId);
-            $q->bindParam(':data',$gestor,PDO::PARAM_LOB);
-            $q->execute();
-            //echo print_r($q->errorInfo());
-            fclose($gestor);
+    protected function uploadFile($fileName,$ext,$file){
+        if(file_exists($file)){
+            if (!copy($file, $this->target_path.$fileName.".".$ext)) {
+                echo "Error al copiar $archivo...\n";
+            }
             unlink($file);
         }
     }
         
     public function rendererFile($fileId, $return = false){
         try {
-            $sql = "SELECT `name`, `ext`, `mime`, `size`, `data`, `fileName`
+            $sql = "SELECT `name`, `ext`, `mime`, `size`
                             FROM `".$this->pluginPrefix."files` f 
-                                     JOIN  ".$this->pluginPrefix."files_data d ON d.fileId = f.fileId
                             WHERE f.fileId = ".$fileId;
             $q = $this->gbd->prepare($sql);
             $q->execute();
@@ -414,20 +409,25 @@ abstract class DBManager{
             $q->bindColumn(2, $ext);
             $q->bindColumn(3, $mime);
             $q->bindColumn(4, $size);
-            $q->bindColumn(5, $data, PDO::PARAM_LOB);
-            $q->bindColumn(6, $fileName);
-            //echo $name;
-            if($q->fetch())
+
+            while($q->fetch())
             {
+                $fileDownload = $this->target_path.$fileId.".".$ext;
                 
-                if($return)
-                    return array("mime" => $mime, "data" => $data);
-                else{
-                    header("Content-Type: ". $mime);
-                    header("Content-Length: ". $size);
-                    header("Content-Disposition: attachment; filename=". $fileName);
-                    echo $data;
+                if(file_exists($fileDownload)){
+                    $fdata = file_get_contents($fileDownload);
+                    if($return)
+                        return array("mime" => $mime, "data" => $fdata);
+                    else {
+                       header("Content-Type: ". $mime);
+                        header("Content-Length: ". $size);
+                        header("Content-Disposition: attachment; filename=". $name);
+
+                        echo $fdata; 
+                    }
                 }
+                else
+                    echo "File not found";
             }
         } catch (PDOException $e) {
             print "¡Error!: " . $e->getMessage() . "<br/>";

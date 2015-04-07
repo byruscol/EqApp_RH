@@ -1,6 +1,7 @@
 <?php
-/*error_reporting(E_ALL);
-ini_set('display_errors', '1');*/
+/*ini_set('display_errors',1);
+error_reporting(E_ALL);
+*/
 require_once('DBManagerModel.php');
 class files extends DBManagerModel{
 	
@@ -65,48 +66,34 @@ class files extends DBManagerModel{
         $rtnData->error = '';
         try{
             $entityObj = $this->entity();
+            $fileFieldName = (!isset($_POST["idFile"]))? "file" : $_POST["idFile"];
             $relEntity = $entityObj["relationship"][$_POST["parentRelationShip"]];
             $target_path = $this->pluginPath."/uploadedFiles/";
+            $_POST["fileName"] = $_FILES[$fileFieldName]['name'];
+            $nameParts = explode(".", $_FILES[$fileFieldName]['name']);
+            $_POST["ext"] = end($nameParts);
+            $nameArray = array_pop($nameParts);
+            $fileName = implode("_",$nameParts);
+            $fileName = str_replace(array("'",".",",","*","@","?","!"), "_",$fileName);
+            $_POST["size"] =  $_FILES[$fileFieldName]["size"];
+
+            $file = $target_path.$fileName.".".$_POST["ext"];
             
-            foreach($_FILES as $key => $value){
-                $_POST["fileName"] = $value['name'];
-                $nameParts = explode(".", $value['name']);
-                $_POST["ext"] = end($nameParts);
-                $nameArray = array_pop($nameParts);
-                $fileName = implode("_",$nameParts);
-                $fileName = str_replace(array("'",".",",","*","@","?","!"), "_",$fileName);
-                $_POST["name"] = (empty($_POST["name"]))? $fileName : $_POST["name"];
-                $_POST["mime"] =  $value["type"];
-                $_POST["size"] =  $value["size"];
-
-                if(array_key_exists('settings', $relEntity) && array_key_exists('deleteAllAfterInsert', $relEntity["settings"]) && $relEntity["settings"]["deleteAllAfterInsert"]){
-                    $query = "SELECT  `fileId`
-                              FROM  `".$relEntity["tableName"]."` n
-                              WHERE  `".$relEntity["parent"]["Id"]."` = " . $_POST["parentId"];
-
-                    $responce = $this->getDataGrid($query);
-                    foreach ( $responce["data"] as $k => $v ){
-                        $this->eliminate($responce["data"][$k]->fileId);
-                    }
-                }
-                
-                $this->addRecord($entityObj, $_POST, array("created" => date("Y-m-d H:i:s"), "created_by" => $this->currentUser->ID));
+            if(move_uploaded_file($_FILES[$fileFieldName]['tmp_name'], $file)) {
+                $this->addRecord($entityObj, $_POST, array("mime"=> $_FILES[$fileFieldName]["type"], "created" => date("Y-m-d H:i:s"), "created_by" => $this->currentUser->ID));
                 $id = $this->LastId;
-                
-                if($_POST["parentRelationShip"] == "fotoIntegrantes")
-                    $_POST["parentId"] = $this->currentUser->ID;
-                    
-                
-                $this->addRecord($relEntity, array($relEntity["parent"]["Id"] => $_POST["parentId"],"fileId" => $this->LastId), array());
-                $file = $target_path.$fileName.".".$_POST["ext"];
-                
-                if(move_uploaded_file($value['tmp_name'], $file)) {
-                    $this->uploadFile($id, $file);
+                if(!empty($id)){
+                    $this->addRecord($relEntity, array($relEntity["parent"]["Id"] => $_POST["parentId"],"fileId" => $id), array());
+                    $this->uploadFile($id,$_POST["ext"],$file);
                     $rtnData->msg = 'success';
-                } else{
-                    $rtnData->msg = 'fail'; 
-                    $rtnData->error = "There was an error uploading the file, please try again!";
                 }
+                else{
+                    unlink($file);
+                    $rtnData->msg = 'fail';
+                }
+            } else{
+                $rtnData->msg = 'fail'; 
+                $rtnData->error = "There was an error uploading the file, please try again!";
             }
         }
         catch (Exception $e){

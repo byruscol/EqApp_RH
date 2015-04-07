@@ -8,7 +8,7 @@ class hobies extends DBManagerModel{
         $entity = $this->entity();
         $start = $params["limit"] * $params["page"] - $params["limit"];
         
-        if( !in_array( "administrator", $currentUserRoles ) && !in_array( "editor", $currentUserRoles )) 
+        if( !$this->isRhAdmin) 
                 $params["filter"] = $this->currentIntegrante;
         
         $query = "SELECT i.integrantesHobiesId, i.`integranteId`/*, h.tipoHobieId*/
@@ -46,7 +46,7 @@ class hobies extends DBManagerModel{
     }
     
     public function add(){
-        if( !in_array( "administrator", $currentUserRoles ) && !in_array( "editor", $currentUserRoles )) 
+        if( !$this->isRhAdmin) 
                 $_POST["integranteId"] = $this->currentIntegrante;
         else
             $_POST["integranteId"] = $_POST["parentId"];

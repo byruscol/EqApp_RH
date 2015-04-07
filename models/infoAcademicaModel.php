@@ -9,7 +9,7 @@ class infoAcademica extends DBManagerModel{
         if(!array_key_exists('filter', $params))
                 $params["filter"] = 0;
  
-        if( !in_array( "administrator", $currentUserRoles ) && !in_array( "editor", $currentUserRoles )) 
+        if( !$this->isRhAdmin) 
                 $params["filter"] = $this->currentIntegrante;
         
         $start = $params["limit"] * $params["page"] - $params["limit"];
@@ -36,8 +36,8 @@ class infoAcademica extends DBManagerModel{
     }
     
     public function add(){
-        if( !in_array( "administrator", $currentUserRoles ) && !in_array( "editor", $currentUserRoles )) 
-                $_POST["integranteId"] = $this->currentIntegrante;
+        if( !$this->isRhAdmin) 
+            $_POST["integranteId"] = $this->currentIntegrante;
         else
             $_POST["integranteId"] = $_POST["parentId"];
         

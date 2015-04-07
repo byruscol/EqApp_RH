@@ -9,7 +9,7 @@ class integrantesTalentos extends DBManagerModel{
         if(!array_key_exists('filter', $params))
                 $params["filter"] = 0;
         
-        if( !in_array( "administrator", $this->currentUser->roles ) && !in_array( "editor", $this->currentUser->roles )) 
+        if( !$this->isRhAdmin) 
                 $params["filter"] = $this->currentIntegrante;
         
         $start = $params["limit"] * $params["page"] - $params["limit"];
@@ -54,14 +54,14 @@ class integrantesTalentos extends DBManagerModel{
     }
     
     public function add(){
-        if( !in_array( "administrator", $this->currentUser->roles ) && !in_array( "editor", $this->currentUser->roles )) 
+        if( !$this->isRhAdmin) 
                 $_POST["integranteId"] = $this->currentIntegrante;
         
         $this->addRecord($this->entity(), $_POST, array("date_entered" => date("Y-m-d H:i:s"), "created_by" => $this->currentUser->ID));
     }
     
     public function edit(){
-        if( !in_array( "administrator", $this->currentUser->roles ) && !in_array( "editor", $this->currentUser->roles )) 
+        if( !$this->isRhAdmin) 
                 $_POST["integranteId"] = $this->currentIntegrante;
         $this->updateRecord($this->entity(), $_POST, array("integranteId" => $_POST["integranteId"]));
     }
