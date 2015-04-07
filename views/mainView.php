@@ -33,4 +33,11 @@ function familiares() {
     global $resource;
     require_once($viewFile);
 }
+
+add_filter('login_redirect', 'my_login_redirect',100,3);
+function my_login_redirect($redirect_to, $request){
+      
+    return admin_url( 'admin.php?page=integrantes' );
+    
+}
 ?>
